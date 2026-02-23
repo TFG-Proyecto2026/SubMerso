@@ -1,0 +1,285 @@
+<!-- Hero Section -->
+<section class="relative min-h-[90vh] gradient-ocean hero-pattern overflow-hidden">
+  <!-- Imágenes decorativas flotantes en el hero -->
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <!-- Imagen 2 - Esquina superior izquierda -->
+    <img src="assets/imgs/image2.png" alt="" class="absolute w-24 h-24 object-contain opacity-30 img-float" 
+         style="top: 10%; left: 5%; animation-delay: 0s;">
+    <!-- Imagen 5 - Lateral derecho -->
+    <img src="assets/imgs/image5.png" alt="" class="absolute w-32 h-32 object-contain opacity-25 img-float" 
+         style="top: 30%; right: 3%; animation-delay: 1s;">
+    <!-- Imagen 9 - Inferior izquierdo -->
+    <img src="assets/imgs/image9.png" alt="" class="absolute w-20 h-20 object-contain opacity-20 img-float" 
+         style="bottom: 25%; left: 8%; animation-delay: 2s;">
+  </div>
+
+  <div class="container mx-auto px-4 py-20 relative z-10">
+    <div class="flex flex-col lg:flex-row items-center justify-between gap-12">
+      <!-- Hero Content -->
+      <div class="flex-1 text-center lg:text-left">
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+          Sumérgete en la
+          <span class="block text-ocean-200">comunidad de buceo</span>
+          más grande
+        </h1>
+        <p class="text-xl text-ocean-100 mb-8 max-w-xl mx-auto lg:mx-0">
+          Registra tus inmersiones, conecta con otros buceadores, descubre centros increíbles 
+          y deja que DeepBlue te guíe hacia tu próxima aventura submarina.
+        </p>
+        
+        <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+          @if (!isAuthenticated) {
+            <a routerLink="/register" 
+               class="bg-white text-ocean-600 hover:bg-ocean-50 font-semibold py-4 px-8 rounded-xl 
+                      shadow-lg hover:shadow-xl transition-all duration-300 text-lg">
+              <i class="bi bi-rocket-takeoff me-2"></i>Comenzar Gratis
+            </a>
+            <a routerLink="/marketplace" 
+               class="border-2 border-white text-white hover:bg-white/10 font-semibold py-4 px-8 
+                      rounded-xl transition-all duration-300 text-lg">
+              <i class="bi bi-compass me-2"></i>Explorar
+            </a>
+          } @else {
+            <a routerLink="/feed" 
+               class="bg-white text-ocean-600 hover:bg-ocean-50 font-semibold py-4 px-8 rounded-xl 
+                      shadow-lg hover:shadow-xl transition-all duration-300 text-lg">
+              <i class="bi bi-house me-2"></i>Ir al Feed
+            </a>
+            <a routerLink="/logbook" 
+               class="border-2 border-white text-white hover:bg-white/10 font-semibold py-4 px-8 
+                      rounded-xl transition-all duration-300 text-lg">
+              <i class="bi bi-journal-bookmark me-2"></i>Mi Logbook
+            </a>
+          }
+        </div>
+      </div>
+
+      <!-- Hero Image - Imagen principal grande -->
+      <div class="flex-1 relative">
+        <div class="relative w-full max-w-lg mx-auto">
+          <div class="absolute inset-0 bg-gradient-to-br from-ocean-300/30 to-deep-500/30 rounded-3xl transform rotate-6"></div>
+          <div class="relative bg-white/10 backdrop-blur-sm rounded-3xl p-8 border border-white/20 overflow-hidden">
+            <!-- Imagen 8 como fondo del card -->
+            <img src="assets/imgs/image8.png" alt="Diving Experience" 
+                 class="w-full h-64 object-cover rounded-2xl mb-6 img-card-hover">
+            <div class="grid grid-cols-2 gap-4">
+              <div class="bg-white/20 rounded-xl p-4 text-center hover:bg-white/30 transition-all">
+                <i class="bi bi-geo-alt text-3xl text-white mb-2"></i>
+                <p class="text-white/90 text-sm font-medium">Explora spots</p>
+              </div>
+              <div class="bg-white/20 rounded-xl p-4 text-center hover:bg-white/30 transition-all">
+                <i class="bi bi-camera text-3xl text-white mb-2"></i>
+                <p class="text-white/90 text-sm font-medium">Comparte fotos</p>
+              </div>
+              <div class="bg-white/20 rounded-xl p-4 text-center hover:bg-white/30 transition-all">
+                <i class="bi bi-award text-3xl text-white mb-2"></i>
+                <p class="text-white/90 text-sm font-medium">Gana badges</p>
+              </div>
+              <div class="bg-white/20 rounded-xl p-4 text-center hover:bg-white/30 transition-all">
+                <i class="bi bi-chat-dots text-3xl text-white mb-2"></i>
+                <p class="text-white/90 text-sm font-medium">Conecta</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Wave Divider -->
+  <div class="absolute bottom-0 left-0 right-0">
+    <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 85C1200 90 1320 90 1380 90L1440 90V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="#f8fafc"/>
+    </svg>
+  </div>
+</section>
+
+<!-- Stats Section -->
+<section class="py-16 bg-gray-50">
+  <div class="container mx-auto px-4">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+      @for (stat of stats; track stat.label) {
+        <div class="text-center">
+          <div class="text-4xl md:text-5xl font-bold text-ocean-600 mb-2">{{ stat.value }}</div>
+          <div class="text-gray-600">{{ stat.label }}</div>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-20 bg-white relative overflow-hidden">
+  <!-- Imagen decorativa lateral -->
+  <img src="assets/imgs/image7.png" alt="" 
+       class="absolute -right-20 top-1/2 -translate-y-1/2 w-64 h-64 object-contain opacity-10 img-float hidden lg:block">
+  
+  <div class="container mx-auto px-4 relative z-10">
+    <div class="text-center mb-16">
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+        Todo lo que necesitas para bucear
+      </h2>
+      <p class="text-gray-600 text-lg max-w-2xl mx-auto">
+        SubMerso combina red social, marketplace y asistente IA para ofrecerte 
+        la mejor experiencia de buceo.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      @for (feature of features; track feature.title) {
+        <div class="card-ocean p-6 hover:shadow-xl transition-all duration-300 group">
+          <div class="w-16 h-16 bg-ocean-100 rounded-xl flex items-center justify-center mb-6 
+                      group-hover:bg-ocean-500 transition-colors duration-300">
+            <i class="bi {{ feature.icon }} text-3xl text-ocean-600 group-hover:text-white 
+                       transition-colors duration-300"></i>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-800 mb-3">{{ feature.title }}</h3>
+          <p class="text-gray-600">{{ feature.description }}</p>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- Gallery Section - Imágenes destacadas -->
+<section class="py-16 bg-gradient-to-b from-gray-50 to-white">
+  <div class="container mx-auto px-4">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl font-bold text-gray-800 mb-4">Explora el mundo submarino</h2>
+      <p class="text-gray-600">Descubre increíbles experiencias de buceo</p>
+    </div>
+    
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="col-span-2 row-span-2">
+        <img src="assets/imgs/image4.png" alt="Diving Adventure" 
+             class="w-full h-full object-cover rounded-2xl shadow-lg img-card-hover">
+      </div>
+      <div>
+        <img src="assets/imgs/image6.png" alt="Ocean Life" 
+             class="w-full h-48 object-cover rounded-2xl shadow-lg img-card-hover">
+      </div>
+      <div>
+        <img src="assets/imgs/image7.png" alt="Underwater World" 
+             class="w-full h-48 object-cover rounded-2xl shadow-lg img-card-hover">
+      </div>
+      <div>
+        <img src="assets/imgs/image9.png" alt="Dive Spot" 
+             class="w-full h-48 object-cover rounded-2xl shadow-lg img-card-hover">
+      </div>
+      <div>
+        <img src="assets/imgs/image10.png" alt="Marine Life" 
+             class="w-full h-48 object-cover rounded-2xl shadow-lg img-card-hover">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-20 gradient-deep relative overflow-hidden">
+  <!-- Imágenes decorativas en el CTA -->
+  <img src="assets/imgs/image5.png" alt="" 
+       class="absolute left-10 bottom-10 w-40 h-40 object-contain opacity-20 img-float hidden md:block">
+  <img src="assets/imgs/image10.png" alt="" 
+       class="absolute right-10 top-10 w-48 h-48 object-contain opacity-15 img-float hidden md:block"
+       style="animation-delay: 1.5s;">
+  
+  <div class="container mx-auto px-4 text-center relative z-10">
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">
+      ¿Listo para tu próxima inmersión?
+    </h2>
+    <p class="text-ocean-200 text-lg mb-8 max-w-2xl mx-auto">
+      Únete a miles de buceadores que ya están usando SubMerso para llevar 
+      su experiencia submarina al siguiente nivel.
+    </p>
+    @if (!isAuthenticated) {
+      <a routerLink="/register" 
+         class="inline-block bg-white text-ocean-600 hover:bg-ocean-50 font-semibold 
+                py-4 px-10 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 text-lg">
+        <i class="bi bi-person-plus me-2"></i>Crear Cuenta Gratis
+      </a>
+    } @else {
+      <a routerLink="/deepblue" 
+         class="inline-block bg-white text-ocean-600 hover:bg-ocean-50 font-semibold 
+                py-4 px-10 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 text-lg">
+        <i class="bi bi-robot me-2"></i>Hablar con DeepBlue
+      </a>
+    }
+  </div>
+</section>
+
+<!-- Testimonials Preview -->
+<section class="py-20 bg-gray-50">
+  <div class="container mx-auto px-4">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl font-bold text-gray-800 mb-4">Lo que dicen nuestros buceadores</h2>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div class="bg-white rounded-xl p-6 shadow-lg">
+        <div class="flex items-center mb-4">
+          <div class="w-12 h-12 bg-ocean-100 rounded-full flex items-center justify-center">
+            <i class="bi bi-person-fill text-ocean-600"></i>
+          </div>
+          <div class="ml-3">
+            <h4 class="font-semibold">María G.</h4>
+            <p class="text-sm text-gray-500">PADI Advanced</p>
+          </div>
+        </div>
+        <p class="text-gray-600">
+          "El logbook digital es increíble. Ya no tengo que preocuparme por perder mi libro físico."
+        </p>
+        <div class="mt-3 text-ocean-500">
+          <i class="bi bi-star-fill"></i>
+          <i class="bi bi-star-fill"></i>
+          <i class="bi bi-star-fill"></i>
+          <i class="bi bi-star-fill"></i>
+          <i class="bi bi-star-fill"></i>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl p-6 shadow-lg">
+        <div class="flex items-center mb-4">
+          <div class="w-12 h-12 bg-ocean-100 rounded-full flex items-center justify-center">
+            <i class="bi bi-person-fill text-ocean-600"></i>
+          </div>
+          <div class="ml-3">
+            <h4 class="font-semibold">Carlos R.</h4>
+            <p class="text-sm text-gray-500">SSI Open Water</p>
+          </div>
+        </div>
+        <p class="text-gray-600">
+          "DeepBlue me recomendó un centro de buceo perfecto para mi nivel. ¡Experiencia increíble!"
+        </p>
+        <div class="mt-3 text-ocean-500">
+          <i class="bi bi-star-fill"></i>
+          <i class="bi bi-star-fill"></i>
+          <i class="bi bi-star-fill"></i>
+          <i class="bi bi-star-fill"></i>
+          <i class="bi bi-star-fill"></i>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl p-6 shadow-lg">
+        <div class="flex items-center mb-4">
+          <div class="w-12 h-12 bg-ocean-100 rounded-full flex items-center justify-center">
+            <i class="bi bi-person-fill text-ocean-600"></i>
+          </div>
+          <div class="ml-3">
+            <h4 class="font-semibold">Ana L.</h4>
+            <p class="text-sm text-gray-500">PADI Divemaster</p>
+          </div>
+        </div>
+        <p class="text-gray-600">
+          "La comunidad es genial. He conocido compañeros de buceo de todo el mundo."
+        </p>
+        <div class="mt-3 text-ocean-500">
+          <i class="bi bi-star-fill"></i>
+          <i class="bi bi-star-fill"></i>
+          <i class="bi bi-star-fill"></i>
+          <i class="bi bi-star-fill"></i>
+          <i class="bi bi-star-half"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

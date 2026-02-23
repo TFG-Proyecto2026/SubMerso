@@ -1,0 +1,223 @@
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="container mx-auto px-4 max-w-2xl">
+    <!-- Header -->
+    <div class="mb-8">
+      <a [routerLink]="['/profile', currentUser?.username]" 
+         class="text-ocean-600 hover:text-ocean-700 mb-4 inline-block">
+        <i class="bi bi-arrow-left me-1"></i>Volver al perfil
+      </a>
+      <h1 class="text-3xl font-bold text-gray-800">Editar Perfil</h1>
+      <p class="text-gray-600">Actualiza tu información personal</p>
+    </div>
+
+    <!-- Success Message -->
+    @if (successMessage) {
+      <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-6">
+        <div class="flex items-center">
+          <i class="bi bi-check-circle me-2"></i>
+          <span>{{ successMessage }}</span>
+        </div>
+      </div>
+    }
+
+    <!-- Error Message -->
+    @if (errorMessage) {
+      <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+        <div class="flex items-center">
+          <i class="bi bi-x-circle me-2"></i>
+          <span>{{ errorMessage }}</span>
+        </div>
+      </div>
+    }
+
+    <!-- Edit Form -->
+    <div class="card-ocean p-8">
+      <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+        <!-- Avatar Section -->
+        <div class="mb-8">
+          <label class="block text-sm font-medium text-gray-700 mb-4">
+            Foto de perfil
+          </label>
+          <div class="flex items-center gap-6">
+            <div class="relative">
+              <div class="w-24 h-24 rounded-full overflow-hidden bg-gray-100 border-2 border-gray-200">
+                @if (avatarPreview) {
+                  <img [src]="avatarPreview" alt="Avatar preview" class="w-full h-full object-cover">
+                } @else {
+                  <div class="w-full h-full flex items-center justify-center">
+                    <i class="bi bi-person-fill text-4xl text-gray-400"></i>
+                  </div>
+                }
+              </div>
+              @if (avatarPreview) {
+                <button 
+                  type="button"
+                  (click)="removeAvatar()"
+                  class="absolute -top-1 -right-1 w-6 h-6 bg-red-500 text-white rounded-full 
+                         flex items-center justify-center hover:bg-red-600 transition-colors">
+                  <i class="bi bi-x"></i>
+                </button>
+              }
+            </div>
+            <div>
+              <input
+                type="file"
+                id="avatar"
+                accept="image/*"
+                (change)="onFileSelected($event)"
+                class="hidden"
+              />
+              <label 
+                for="avatar"
+                class="btn-ocean-outline cursor-pointer inline-block">
+                <i class="bi bi-camera me-2"></i>Cambiar foto
+              </label>
+              <p class="text-sm text-gray-500 mt-2">JPG, PNG o GIF. Máximo 5MB.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Full Name -->
+        <div class="mb-6">
+          <label for="fullName" class="block text-sm font-medium text-gray-700 mb-2">
+            Nombre completo *
+          </label>
+          <input
+            type="text"
+            id="fullName"
+            formControlName="fullName"
+            class="input-ocean"
+            [class.border-red-500]="fullName?.invalid && fullName?.touched"
+            placeholder="Tu nombre completo"
+          />
+          @if (fullName?.invalid && fullName?.touched) {
+            <p class="text-red-500 text-sm mt-1">
+              @if (fullName?.errors?.['required']) {
+                El nombre es obligatorio
+              } @else if (fullName?.errors?.['minlength']) {
+                Mínimo 2 caracteres
+              }
+            </p>
+          }
+        </div>
+
+        <!-- Bio -->
+        <div class="mb-6">
+          <label for="bio" class="block text-sm font-medium text-gray-700 mb-2">
+            Biografía
+          </label>
+          <textarea
+            id="bio"
+            formControlName="bio"
+            rows="4"
+            class="input-ocean resize-none"
+            [class.border-red-500]="bio?.invalid && bio?.touched"
+            placeholder="Cuéntanos sobre ti y tu experiencia en buceo..."
+          ></textarea>
+          <div class="flex justify-between mt-1">
+            @if (bio?.invalid && bio?.touched) {
+              <p class="text-red-500 text-sm">Máximo 500 caracteres</p>
+            } @else {
+              <span></span>
+            }
+            <span class="text-sm text-gray-500">
+              {{ bio?.value?.length || 0 }}/500
+            </span>
+          </div>
+        </div>
+
+        <!-- Location -->
+        <div class="mb-6">
+          <label for="location" class="block text-sm font-medium text-gray-700 mb-2">
+            Ubicación
+          </label>
+          <div class="relative">
+            <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+              <i class="bi bi-geo-alt"></i>
+            </span>
+            <input
+              type="text"
+              id="location"
+              formControlName="location"
+              class="input-ocean pl-10"
+              placeholder="Tu ciudad o país"
+            />
+          </div>
+        </div>
+
+        <!-- Certification Level -->
+        <div class="mb-8">
+          <label for="certificationLevel" class="block text-sm font-medium text-gray-700 mb-2">
+            Nivel de certificación
+          </label>
+          <div class="relative">
+            <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+              <i class="bi bi-award"></i>
+            </span>
+            <select
+              id="certificationLevel"
+              formControlName="certificationLevel"
+              class="input-ocean pl-10 appearance-none cursor-pointer"
+            >
+              @for (level of certificationLevels; track level) {
+                <option [value]="level">{{ level }}</option>
+              }
+            </select>
+            <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none">
+              <i class="bi bi-chevron-down"></i>
+            </span>
+          </div>
+        </div>
+
+        <!-- Account Info (Read Only) -->
+        <div class="bg-gray-50 rounded-lg p-4 mb-8">
+          <h3 class="text-sm font-medium text-gray-700 mb-3">Información de la cuenta</h3>
+          <div class="space-y-2 text-sm">
+            <div class="flex justify-between">
+              <span class="text-gray-500">Usuario</span>
+              <span class="text-gray-800">&#64;{{ currentUser?.username }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-500">Email</span>
+              <span class="text-gray-800">{{ currentUser?.email }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit Buttons -->
+        <div class="flex gap-4">
+          <a [routerLink]="['/profile', currentUser?.username]" 
+             class="flex-1 btn-ocean-outline py-3 text-center">
+            Cancelar
+          </a>
+          <button
+            type="submit"
+            [disabled]="isSaving"
+            class="flex-1 btn-ocean py-3 flex items-center justify-center"
+          >
+            @if (isSaving) {
+              <span class="animate-spin mr-2">
+                <i class="bi bi-arrow-repeat"></i>
+              </span>
+              Guardando...
+            } @else {
+              <i class="bi bi-check-circle me-2"></i>
+              Guardar Cambios
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Danger Zone -->
+    <div class="mt-8 card-ocean p-6 border-red-200">
+      <h3 class="text-lg font-semibold text-red-600 mb-2">Zona de peligro</h3>
+      <p class="text-gray-600 text-sm mb-4">
+        Estas acciones son permanentes y no se pueden deshacer.
+      </p>
+      <button class="text-red-600 hover:text-red-700 font-medium text-sm">
+        <i class="bi bi-trash me-1"></i>Eliminar cuenta
+      </button>
+    </div>
+  </div>
+</div>

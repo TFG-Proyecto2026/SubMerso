@@ -1,0 +1,146 @@
+<nav class="navbar-ocean sticky top-0 z-50 shadow-lg">
+  <div class="container mx-auto px-4">
+    <div class="flex items-center justify-between h-16">
+      <!-- Logo -->
+      <a routerLink="/" class="flex items-center space-x-2">
+        <img src="assets/imgs/logo.png" alt="SubMerso Logo" class="h-12 w-auto object-contain logo-glow">
+        <span class="text-white font-bold text-xl">SubMerso</span>
+      </a>
+
+      <!-- Desktop Navigation -->
+      <div class="hidden md:flex items-center space-x-6">
+        <a routerLink="/" routerLinkActive="text-ocean-300" [routerLinkActiveOptions]="{exact: true}"
+           class="text-white hover:text-ocean-300 transition-colors font-medium">
+          Inicio
+        </a>
+        <a routerLink="/marketplace" routerLinkActive="text-ocean-300"
+           class="text-white hover:text-ocean-300 transition-colors font-medium">
+          Marketplace
+        </a>
+        
+        @if (isAuthenticated) {
+          <a routerLink="/feed" routerLinkActive="text-ocean-300"
+             class="text-white hover:text-ocean-300 transition-colors font-medium">
+            Feed
+          </a>
+          <a routerLink="/logbook" routerLinkActive="text-ocean-300"
+             class="text-white hover:text-ocean-300 transition-colors font-medium">
+            Mi Logbook
+          </a>
+          <a routerLink="/deepblue" routerLinkActive="text-ocean-300"
+             class="text-white hover:text-ocean-300 transition-colors font-medium">
+            <i class="bi bi-robot me-1"></i>DeepBlue
+          </a>
+        }
+      </div>
+
+      <!-- Auth Section -->
+      <div class="hidden md:flex items-center space-x-4">
+        @if (isAuthenticated && currentUser) {
+          <!-- User Menu -->
+          <div class="relative">
+            <button (click)="toggleProfileMenu()" 
+                    class="flex items-center space-x-2 text-white hover:text-ocean-300 transition-colors">
+              <div class="w-8 h-8 rounded-full bg-ocean-400 flex items-center justify-center overflow-hidden">
+                @if (currentUser.avatar) {
+                  <img [src]="currentUser.avatar" [alt]="currentUser.fullName" class="w-full h-full object-cover">
+                } @else {
+                  <i class="bi bi-person-fill"></i>
+                }
+              </div>
+              <span class="font-medium">{{ currentUser.username }}</span>
+              <i class="bi bi-chevron-down text-sm"></i>
+            </button>
+
+            @if (isProfileMenuOpen) {
+              <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-2 z-50"
+                   (mouseleave)="closeProfileMenu()">
+                <a [routerLink]="['/profile', currentUser.username]" 
+                   class="block px-4 py-2 text-gray-700 hover:bg-ocean-50 hover:text-ocean-600">
+                  <i class="bi bi-person me-2"></i>Mi Perfil
+                </a>
+                <a routerLink="/profile/edit" 
+                   class="block px-4 py-2 text-gray-700 hover:bg-ocean-50 hover:text-ocean-600">
+                  <i class="bi bi-gear me-2"></i>Configuración
+                </a>
+                <a routerLink="/logbook" 
+                   class="block px-4 py-2 text-gray-700 hover:bg-ocean-50 hover:text-ocean-600">
+                  <i class="bi bi-journal-bookmark me-2"></i>Mi Logbook
+                </a>
+                <hr class="my-2">
+                <button (click)="logout()" 
+                        class="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50">
+                  <i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión
+                </button>
+              </div>
+            }
+          </div>
+        } @else {
+          <a routerLink="/login" 
+             class="text-white hover:text-ocean-300 transition-colors font-medium">
+            Iniciar Sesión
+          </a>
+          <a routerLink="/register" 
+             class="btn-ocean text-sm">
+            Registrarse
+          </a>
+        }
+      </div>
+
+      <!-- Mobile Menu Button -->
+      <button (click)="toggleMenu()" class="md:hidden text-white p-2">
+        <i class="bi" [ngClass]="isMenuOpen ? 'bi-x-lg' : 'bi-list'" style="font-size: 1.5rem;"></i>
+      </button>
+    </div>
+
+    <!-- Mobile Menu -->
+    @if (isMenuOpen) {
+      <div class="md:hidden border-t border-ocean-600 py-4">
+        <div class="flex flex-col space-y-3">
+          <a routerLink="/" (click)="toggleMenu()"
+             class="text-white hover:text-ocean-300 transition-colors font-medium py-2">
+            Inicio
+          </a>
+          <a routerLink="/marketplace" (click)="toggleMenu()"
+             class="text-white hover:text-ocean-300 transition-colors font-medium py-2">
+            Marketplace
+          </a>
+          
+          @if (isAuthenticated) {
+            <a routerLink="/feed" (click)="toggleMenu()"
+               class="text-white hover:text-ocean-300 transition-colors font-medium py-2">
+              Feed
+            </a>
+            <a routerLink="/logbook" (click)="toggleMenu()"
+               class="text-white hover:text-ocean-300 transition-colors font-medium py-2">
+              Mi Logbook
+            </a>
+            <a routerLink="/deepblue" (click)="toggleMenu()"
+               class="text-white hover:text-ocean-300 transition-colors font-medium py-2">
+              DeepBlue Bot
+            </a>
+            <hr class="border-ocean-600">
+            <a [routerLink]="['/profile', currentUser?.username]" (click)="toggleMenu()"
+               class="text-white hover:text-ocean-300 transition-colors font-medium py-2">
+              Mi Perfil
+            </a>
+            <button (click)="logout()" 
+                    class="text-left text-red-300 hover:text-red-200 transition-colors font-medium py-2">
+              Cerrar Sesión
+            </button>
+          } @else {
+            <hr class="border-ocean-600">
+            <a routerLink="/login" (click)="toggleMenu()"
+               class="text-white hover:text-ocean-300 transition-colors font-medium py-2">
+              Iniciar Sesión
+            </a>
+            <a routerLink="/register" (click)="toggleMenu()"
+               class="btn-ocean text-center">
+              Registrarse
+            </a>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</nav>
