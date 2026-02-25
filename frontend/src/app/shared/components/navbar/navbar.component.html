@@ -19,6 +19,12 @@
         </a>
         
         @if (isAuthenticated) {
+          @if (isAdmin) {
+            <a routerLink="/admin" routerLinkActive="text-ocean-300"
+               class="text-white hover:text-ocean-300 transition-colors font-medium">
+              <i class="bi bi-shield-lock me-1"></i>Admin
+            </a>
+          }
           <a routerLink="/feed" routerLinkActive="text-ocean-300"
              class="text-white hover:text-ocean-300 transition-colors font-medium">
             Feed
@@ -53,20 +59,39 @@
             </button>
 
             @if (isProfileMenuOpen) {
-              <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-2 z-50"
+              <div class="absolute right-0 mt-2 w-52 bg-white rounded-lg shadow-xl py-2 z-50"
                    (mouseleave)="closeProfileMenu()">
-                <a [routerLink]="['/profile', currentUser.username]" 
+                <div class="px-4 py-2 border-b border-gray-100">
+                  <span class="text-sm text-gray-500">Conectado como</span>
+                  <p class="font-medium text-gray-800">{{ currentUser.username }}</p>
+                </div>
+                <a [routerLink]="['/profile', currentUser.username]" (click)="closeProfileMenu()"
                    class="block px-4 py-2 text-gray-700 hover:bg-ocean-50 hover:text-ocean-600">
                   <i class="bi bi-person me-2"></i>Mi Perfil
                 </a>
-                <a routerLink="/profile/edit" 
-                   class="block px-4 py-2 text-gray-700 hover:bg-ocean-50 hover:text-ocean-600">
-                  <i class="bi bi-gear me-2"></i>Configuración
-                </a>
-                <a routerLink="/logbook" 
-                   class="block px-4 py-2 text-gray-700 hover:bg-ocean-50 hover:text-ocean-600">
-                  <i class="bi bi-journal-bookmark me-2"></i>Mi Logbook
-                </a>
+                @if (isAdmin) {
+                  <a routerLink="/admin" (click)="closeProfileMenu()"
+                     class="block px-4 py-2 text-gray-700 hover:bg-ocean-50 hover:text-ocean-600">
+                    <i class="bi bi-shield-lock me-2"></i>Panel admin
+                  </a>
+                  <a routerLink="/admin" (click)="closeProfileMenu()"
+                     class="block px-4 py-2 text-gray-700 hover:bg-ocean-50 hover:text-ocean-600">
+                    <i class="bi bi-people me-2"></i>Gestión de cuentas
+                  </a>
+                } @else {
+                  <a routerLink="/profile/edit" (click)="closeProfileMenu()"
+                     class="block px-4 py-2 text-gray-700 hover:bg-ocean-50 hover:text-ocean-600">
+                    <i class="bi bi-gear me-2"></i>Configuración
+                  </a>
+                  <a routerLink="/logbook" (click)="closeProfileMenu()"
+                     class="block px-4 py-2 text-gray-700 hover:bg-ocean-50 hover:text-ocean-600">
+                    <i class="bi bi-journal-bookmark me-2"></i>Mis inmersiones
+                  </a>
+                  <a routerLink="/feed" (click)="closeProfileMenu()"
+                     class="block px-4 py-2 text-gray-700 hover:bg-ocean-50 hover:text-ocean-600">
+                    <i class="bi bi-people me-2"></i>Perfil social
+                  </a>
+                }
                 <hr class="my-2">
                 <button (click)="logout()" 
                         class="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50">
@@ -107,6 +132,12 @@
           </a>
           
           @if (isAuthenticated) {
+            @if (isAdmin) {
+              <a routerLink="/admin" (click)="toggleMenu()"
+                 class="text-white hover:text-ocean-300 transition-colors font-medium py-2">
+                Panel admin
+              </a>
+            }
             <a routerLink="/feed" (click)="toggleMenu()"
                class="text-white hover:text-ocean-300 transition-colors font-medium py-2">
               Feed
@@ -124,7 +155,13 @@
                class="text-white hover:text-ocean-300 transition-colors font-medium py-2">
               Mi Perfil
             </a>
-            <button (click)="logout()" 
+            @if (!isAdmin) {
+              <a routerLink="/profile/edit" (click)="toggleMenu()"
+                 class="text-white hover:text-ocean-300 transition-colors font-medium py-2">
+                Configuración
+              </a>
+            }
+            <button (click)="logout()"
                     class="text-left text-red-300 hover:text-red-200 transition-colors font-medium py-2">
               Cerrar Sesión
             </button>

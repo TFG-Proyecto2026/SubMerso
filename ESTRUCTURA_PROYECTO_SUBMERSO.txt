@@ -1,0 +1,459 @@
+================================================================================
+  SUBMERSO - ESTRUCTURA DEL PROYECTO Y GUÍA DE CLASES
+  (Lenguaje sencillo para entender qué hace cada parte)
+================================================================================
+
+SubMerso es una aplicación de buceo con tres pilares: una red social entre
+buceadores (feed, perfiles, seguir a otros), un cuaderno de inmersiones (logbook)
+y un marketplace para reservar experiencias. Además hay un bot (DeepBlue) para
+recomendaciones y un panel de administración para gestionar usuarios.
+
+El proyecto tiene dos partes: BACKEND (servidor en Java con Spring Boot que
+guarda datos en MongoDB y expone la API) y FRONTEND (página web en Angular que
+el usuario ve en el navegador y que llama a esa API).
+
+--------------------------------------------------------------------------------
+  ESTRUCTURA GENERAL DEL REPOSITORIO
+--------------------------------------------------------------------------------
+
+  Submerso/
+  ├── backend/     → Servidor (Java, Spring Boot, MongoDB). Escucha en el puerto 8085.
+  └── frontend/    → Cliente web (Angular). Se sirve en el puerto 4200 (o similar).
+
+El frontend hace peticiones HTTP al backend (por ejemplo a http://localhost:8085/api).
+El backend valida quién es el usuario (con un token JWT), lee y escribe en MongoDB
+y devuelve datos en JSON.
+
+
+================================================================================
+  PARTE 1: BACKEND
+================================================================================
+
+El backend está organizado en paquetes por “responsabilidad”: modelos (datos),
+repositorios (acceso a base de datos), servicios (lógica de negocio), controladores
+(endpoints que reciben las peticiones), seguridad, configuración, etc.
+
+--------------------------------------------------------------------------------
+  1.1 MODELOS (model/)
+--------------------------------------------------------------------------------
+Son las “entidades” que se guardan en MongoDB. Cada clase suele ser una colección.
+
+  · User
+    Lo que guardamos de cada usuario: email, nombre de usuario, contraseña (encriptada),
+    nombre y apellidos, perfil (bio, avatar, nivel de certificación, etc.), lista de
+    seguidores, roles (USER, ADMIN), si está activo, fechas de creación/actualización.
+
+  · Profile
+    Datos del perfil público: biografía, avatar, ubicación, nivel de certificación,
+    número de inmersiones, etc. Va embebido o referenciado en User.
+
+  · Dive
+    Una inmersión del logbook: profundidad, tiempo, lugar, fecha, notas, y relación
+    con el usuario que la hizo.
+
+  · Post
+    Una publicación del feed social: autor, texto, imagen, likes, comentarios, fecha.
+
+  · Comment
+    Un comentario en un post: quién lo escribe, texto, fecha.
+
+  · Booking
+    Una reserva del marketplace: qué experiencia, para qué fecha, qué usuario.
+
+  · Payment
+    Información de pago asociada a una reserva (estado, método, etc.).
+
+--------------------------------------------------------------------------------
+  1.2 REPOSITORIOS (repository/)
+--------------------------------------------------------------------------------
+Son la “puerta” a la base de datos. No llevan lógica de negocio; solo consultas
+y guardados (buscar usuario por email, guardar una inmersión, listar posts, etc.).
+Spring Data MongoDB genera la implementación a partir del nombre del método.
+
+  · UserRepository      → Buscar/guardar usuarios (por id, email, username).
+  · DiveRepository      → CRUD de inmersiones del logbook.
+  · PostRepository      → CRUD de publicaciones del feed.
+  · CommentRepository  → Comentarios de los posts.
+  · BookingRepository   → Reservas del marketplace.
+
+--------------------------------------------------------------------------------
+  1.3 SERVICIOS (service/)
+--------------------------------------------------------------------------------
+Aquí está la lógica de negocio: qué puede hacer la aplicación (registrar usuario,
+crear inmersión, dar like, seguir a alguien, etc.). Los controladores solo
+reciben la petición y delegan en el servicio correspondiente.
+
+  · AuthService
+    Registro, login, refresh del token y logout. Genera y valida los tokens JWT.
+    Asigna ROLE_ADMIN si el email contiene "admin".
+
+  · UserService
+    Obtener usuario por id o username, actualizar perfil, listar seguidores/seguidos,
+    seguir/dejar de seguir. También tiene el método que usa el admin para listar
+    todos los usuarios (findAllForAdmin).
+
+  · FeedService
+    Crear y listar posts, dar like/quitar like, comentarios, borrar post.
+
+  · LogbookService
+    Crear, editar, borrar y listar inmersiones del usuario.
+
+  · MarketplaceService
+    Crear, listar, obtener y cancelar reservas (bookings).
+
+  · BotService
+    Procesar mensajes del bot DeepBlue (recomendaciones, conversación) y limpiar
+    la conversación.
+
+--------------------------------------------------------------------------------
+  1.4 CONTROLADORES (controller/)
+--------------------------------------------------------------------------------
+Definen las “rutas” de la API (URLs y métodos HTTP). Reciben la petición, validan
+los datos si hace falta, llaman al servicio y devuelven la respuesta envuelta en
+ApiResponse (éxito, mensaje, datos).
+
+  · AuthController   (/api/auth)
+    POST /register, /login, /refresh, /logout.
+
+  · UserController   (/api/users)
+    GET /{id}, /username/{username}; PUT /{id} (actualizar perfil); seguidores y
+    seguir/dejar de seguir.
+
+  · AdminController  (/api/admin) — solo si el usuario tiene rol ADMIN
+    GET /users → lista todos los usuarios para el panel de administración.
+
+  · FeedController   (/api/feed)
+    GET (listar feed), POST (crear post), GET /{postId}, DELETE /{postId},
+    like/unlike.
+
+  · LogbookController (/api/logbook)
+    GET/POST/PUT/DELETE de inmersiones (/dives, /dives/{id}).
+
+  · MarketplaceController (/api/marketplace)
+    GET/POST de bookings, GET/DELETE por id.
+
+  · BotController    (/api/bot)
+    POST /message (enviar mensaje al bot), DELETE /conversation (limpiar).
+
+--------------------------------------------------------------------------------
+  1.5 SEGURIDAD (security/)
+--------------------------------------------------------------------------------
+  · JwtAuthenticationFilter
+    Se ejecuta en cada petición: lee el token JWT del header "Authorization",
+    lo valida y deja en el contexto quién es el usuario. Así el resto del backend
+    sabe “quién está llamando” sin volver a validar la contraseña.
+
+  · JwtAuthenticationEntryPoint
+    Si alguien intenta entrar a una ruta protegida sin token o con token inválido,
+    responde con un 401 (no autorizado) en lugar de dejar pasar.
+
+  · UserPrincipal
+    Objeto que representa al usuario logueado dentro del backend (id, email,
+    roles, etc.). Se rellena a partir del JWT.
+
+  · CustomUserDetailsService
+    Spring Security lo usa para cargar el usuario por username/email cuando
+    hace la autenticación (login). Devuelve un UserPrincipal.
+
+  · CurrentUser
+    Anotación para inyectar en un controlador el usuario actual (UserPrincipal)
+    sin tener que leerlo a mano del contexto.
+
+  · SecurityConfig
+    Configura qué rutas son públicas (login, registro, algunas de lectura) y
+    cuáles exigen estar logueado o ser ADMIN. También configura CORS, desactiva
+    CSRF para API REST, usa sesión stateless (todo con JWT) y registra el
+    filtro JWT y el cifrado de contraseñas (BCrypt).
+
+--------------------------------------------------------------------------------
+  1.6 CONFIGURACIÓN (config/)
+--------------------------------------------------------------------------------
+  · MongoConfig
+    Configuración de MongoDB (auditoría, repositorios) y un “customizer” que
+    fuerza SCRAM-SHA-256 para conectarse bien a MongoDB Atlas.
+
+  · SecurityConfig
+    (Descrito arriba en Seguridad.)
+
+  · AdminUserSeeder
+    Al arrancar la aplicación, si no existe el usuario admin, lo crea con
+    email admin@submerso.com y contraseña Admin.1234. Si MongoDB falla, no
+    tira abajo el arranque (try/catch).
+
+  · WebConfig
+    Configuración web (por ejemplo CORS si se define ahí).
+
+--------------------------------------------------------------------------------
+  1.7 DTOs (dto/)
+--------------------------------------------------------------------------------
+Objetos que se usan para “entrar y salir” de la API: no exponen la entidad
+completa (por ejemplo no enviamos la contraseña). Ejemplos:
+
+  · auth: LoginRequest, RegisterRequest, RefreshTokenRequest, AuthResponse.
+  · user: UserDTO, UserSummaryDTO, ProfileDTO, UpdateUserRequest, FollowDTO, AdminUserDTO.
+  · feed: PostDTO.
+  · logbook: DiveDTO.
+  · marketplace: BookingDTO.
+  · common: ApiResponse<T> (éxito, mensaje, data).
+
+--------------------------------------------------------------------------------
+  1.8 OTRAS PARTES DEL BACKEND
+--------------------------------------------------------------------------------
+  · mapper/UserMapper
+    Convierte entre User (entidad) y DTOs (UserDTO, etc.) con MapStruct.
+
+  · exception/
+    CustomExceptions (excepciones propias) y GlobalExceptionHandler (captura
+    errores y devuelve respuestas JSON coherentes para el frontend).
+
+  · utils/
+    JwtUtils (crear y validar tokens), DateUtils si se usa.
+
+  · SubmersoApplication.java
+    Clase principal que arranca Spring Boot.
+
+
+================================================================================
+  PARTE 2: FRONTEND (Angular)
+================================================================================
+
+El frontend está organizado en tres bloques: CORE (servicios y reglas globales),
+FEATURES (pantallas por funcionalidad) y SHARED (componentes y utilidades
+compartidas). Las rutas cargan componentes bajo demanda (lazy load).
+
+--------------------------------------------------------------------------------
+  2.1 ESTRUCTURA DE CARPETAS
+--------------------------------------------------------------------------------
+
+  app/
+  ├── core/                    → Lógica y reglas que afectan a toda la app
+  │   ├── guards/              → Quién puede entrar a cada ruta
+  │   ├── interceptors/        → Añadir token a las peticiones y manejar 401
+  │   └── services/            → Servicios que llaman al backend
+  │
+  ├── features/                → Pantallas y flujos por funcionalidad
+  │   ├── admin/               → Panel de administración
+  │   ├── auth/                → Login y registro
+  │   ├── home/                 → Página de inicio (tres paneles)
+  │   ├── social/               → Feed y seguidores
+  │   ├── profile/              → Ver y editar perfil
+  │   ├── logbook/              → Lista de inmersiones, detalle, validación QR
+  │   ├── marketplace/         → Búsqueda, reserva, pago
+  │   └── deepblue-bot/        → Chat con el bot y recomendaciones
+  │
+  ├── shared/                  → Componentes y utilidades reutilizables
+  │   ├── components/          → Navbar, footer, tarjetas, modales
+  │   ├── directives/          → Por ejemplo lazy-load de imágenes
+  │   └── pipes/               → Por ejemplo "hace X tiempo" (time-ago)
+  │
+  ├── app.routes.ts            → Definición de todas las rutas
+  ├── app.config.ts            → Configuración de la app (providers, interceptores)
+  └── app.component.*          → Componente raíz (navbar + outlet + footer)
+
+--------------------------------------------------------------------------------
+  2.2 RUTAS (app.routes.ts)
+--------------------------------------------------------------------------------
+Cada ruta indica qué componente se muestra y si hace falta estar logueado (authGuard)
+o ser admin (adminGuard).
+
+  · ''                 → Home (tres paneles: Viajar, Logbook, FedSocial).
+  · /login             → Pantalla de login.
+  · /register          → Pantalla de registro.
+  · /profile/:username → Ver perfil público de un usuario.
+  · /profile/edit      → Editar mi perfil (requiere login).
+  · /feed              → Feed social (requiere login).
+  · /followers         → Lista de seguidores (requiere login).
+  · /marketplace       → Búsqueda del marketplace.
+  · /marketplace/booking/:id   → Reservar (requiere login).
+  · /marketplace/payment       → Pago (requiere login).
+  · /logbook           → Lista de mis inmersiones (requiere login).
+  · /logbook/:id       → Detalle de una inmersión (requiere login).
+  · /logbook/validate/:qr     → Validación por QR (puede ser pública según diseño).
+  · /deepblue         → Chat con el bot (requiere login).
+  · /recommendations   → Recomendaciones del bot (requiere login).
+  · /admin             → Panel admin (solo ADMIN).
+
+--------------------------------------------------------------------------------
+  2.3 SERVICIOS (core/services/)
+--------------------------------------------------------------------------------
+Son los que hablan con el backend. Centralizan las URLs y la forma de enviar
+el token.
+
+  · AuthService
+    Login, registro, logout, refresh del token. Guarda el token y el usuario en
+    memoria/localStorage. Expone si hay usuario logueado, quién es y si es admin
+    (roles). El frontend usa esto para mostrar menús y redirigir (admin → /admin,
+    user → /feed).
+
+  · UserService
+    Obtener usuario por id o username, actualizar perfil, seguidores/seguidos,
+    seguir/dejar de seguir. Llama a los endpoints de /api/users.
+
+  · AdminService
+    Listar todos los usuarios (GET /api/admin/users). Solo tiene sentido cuando
+    el usuario es admin.
+
+  · DiveService (si existe)
+    Llamadas al logbook: listar inmersiones, crear, editar, borrar.
+
+  · MarketplaceService
+    Reservas: listar, crear, obtener, cancelar. Llama a /api/marketplace.
+
+  · BotService
+    Enviar mensaje al bot y limpiar conversación. Llama a /api/bot.
+
+--------------------------------------------------------------------------------
+  2.4 GUARDS (core/guards/)
+--------------------------------------------------------------------------------
+Funciones que Angular ejecuta antes de entrar en una ruta. Si devuelven false,
+no se muestra la página y normalmente se redirige (por ejemplo al login).
+
+  · authGuard
+    Comprueba si el usuario está logueado (token válido). Si no, redirige a
+    /login y puede guardar la URL para volver después de iniciar sesión.
+
+  · adminGuard
+    Comprueba si el usuario está logueado y además tiene rol de administrador.
+    Si no, no deja entrar a /admin (y puede redirigir al feed o al home).
+
+--------------------------------------------------------------------------------
+  2.5 INTERCEPTOR (core/interceptors/)
+--------------------------------------------------------------------------------
+  · jwtInterceptor
+    En cada petición HTTP que sale del frontend, si hay token lo añade en el
+    header "Authorization: Bearer ...". Si el backend responde 401 (no autorizado),
+    hace logout y redirige al login (por ejemplo sesión caducada).
+
+--------------------------------------------------------------------------------
+  2.6 COMPONENTES POR FUNCIONALIDAD (features/)
+--------------------------------------------------------------------------------
+Cada “pantalla” o flujo suele ser un componente con su .ts (lógica), .html
+(vista) y .css (estilos).
+
+  · home (HomeComponent)
+    Página de inicio: tres paneles con enlaces (Viajar → marketplace, Logbook →
+    logbook, FedSocial → feed). Tiene burbujas animadas y estilo tipo cristal.
+    No requiere estar logueado.
+
+  · auth/login (LoginComponent)
+    Formulario de email y contraseña. Al enviar llama a AuthService.login y,
+    si va bien, redirige: admin a /admin, usuario normal a /feed.
+
+  · auth/register (RegisterComponent)
+    Formulario de registro (username, email, contraseña, nombre). Llama a
+    AuthService y luego redirige igual que el login.
+
+  · social/feed (FeedComponent)
+    Muestra el feed de publicaciones. Por ahora puede ser un placeholder
+    “Próximamente” con enlace al marketplace. Cuando esté implementado, listará
+    posts y permitirá crear y dar like.
+
+  · social/followers (FollowersComponent)
+    Lista de seguidores o seguidos del usuario.
+
+  · profile/profile-view (ProfileViewComponent)
+    Ver el perfil público de un usuario (por username en la ruta). Muestra
+    avatar, bio, estadísticas, etc.
+
+  · profile/profile-edit (ProfileEditComponent)
+    Formulario para editar el perfil del usuario logueado. Usa UserService
+    para guardar cambios.
+
+  · logbook/dive-list (DiveListComponent)
+    Lista de inmersiones del usuario (mi logbook). Enlace al detalle y a añadir
+    nueva.
+
+  · logbook/dive-detail (DiveDetailComponent)
+    Detalle de una inmersión (por id en la ruta). Ver y posiblemente editar.
+
+  · logbook/qr-validation (QrValidationComponent)
+    Pantalla para validar una inmersión mediante un código QR.
+
+  · marketplace/search (SearchComponent)
+    Búsqueda de experiencias o ofertas del marketplace. Lleva a la reserva.
+
+  · marketplace/booking (BookingComponent)
+    Formulario de reserva para una experiencia (id en la ruta).
+
+  · marketplace/payment (PaymentComponent)
+    Flujo de pago tras la reserva.
+
+  · deepblue-bot/chat (ChatComponent)
+    Interfaz de chat con el bot DeepBlue. Envía mensajes con BotService.
+
+  · deepblue-bot/recommendation (RecommendationComponent)
+    Pantalla de recomendaciones del bot.
+
+  · admin/dashboard (AdminDashboardComponent)
+    Panel de administración: lista de usuarios (nombre, email, roles, etc.)
+    obtenida con AdminService. Solo accesible con adminGuard.
+
+--------------------------------------------------------------------------------
+  2.7 COMPONENTES COMPARTIDOS (shared/)
+--------------------------------------------------------------------------------
+  · navbar (NavbarComponent)
+    Barra superior: logo, enlaces según si estás logueado o no. Si estás
+    logueado, menú desplegable: para admin “Panel admin” y “Gestión de cuentas”;
+    para usuario “Configuración”, “Mis inmersiones”, “Perfil social”. Incluye
+    logout.
+
+  · footer (FooterComponent)
+    Pie de página (enlaces, copyright, etc.).
+
+  · cards/dive-card (DiveCardComponent)
+    Tarjeta para mostrar una inmersión en listas (reutilizable).
+
+  · modals/confirm-modal (ConfirmModalComponent)
+    Modal de confirmación (por ejemplo “¿Borrar esta inmersión?”).
+
+  · pipes/time-ago
+    Convierte una fecha a texto tipo “hace 2 horas” o “hace 3 días”.
+
+  · directives/lazy-load
+    Para cargar imágenes cuando entren en vista (lazy loading).
+
+--------------------------------------------------------------------------------
+  2.8 CÓMO ENCAJAN FRONT Y BACK
+--------------------------------------------------------------------------------
+  · El usuario abre la web (frontend). La primera vez suele ver el Home.
+  · Si va a Login o Register, el frontend envía email/contraseña (o datos de
+    registro) al backend (/api/auth/login o /register). El backend devuelve
+    token y datos del usuario (incluidos roles).
+  · El frontend guarda el token y el usuario. En cada petición posterior, el
+    interceptor añade "Authorization: Bearer <token>". El backend (filtro JWT)
+    valida el token y sabe quién es el usuario.
+  · Las pantallas que requieren login (feed, logbook, admin, etc.) están
+    protegidas por authGuard o adminGuard. Si no hay token o no eres admin,
+    te redirigen.
+  · Cada “feature” del frontend (feed, logbook, marketplace, admin) usa su
+    servicio (FeedService, DiveService, MarketplaceService, AdminService),
+    que llama al controlador correspondiente del backend. El backend usa
+    servicios y repositorios para leer/escribir en MongoDB y devuelve JSON.
+
+
+================================================================================
+  RESUMEN RÁPIDO
+================================================================================
+
+  Backend:
+  · Modelos = qué guardamos (User, Dive, Post, Booking, etc.).
+  · Repositorios = acceso a MongoDB (sin lógica).
+  · Servicios = lógica de negocio (auth, usuarios, feed, logbook, marketplace, bot).
+  · Controladores = rutas de la API que reciben peticiones y devuelven JSON.
+  · Seguridad = JWT (quién es el usuario) y qué rutas son públicas o de admin.
+
+  Frontend:
+  · core = servicios (llamadas al backend), guards (quién puede entrar) e
+    interceptor (añadir token y manejar 401).
+  · features = cada pantalla/flujo (home, login, feed, perfil, logbook,
+    marketplace, bot, admin).
+  · shared = navbar, footer, tarjetas, modales, pipes y directivas reutilizables.
+  · app.routes = qué URL muestra qué componente y con qué protección.
+
+Con esto se puede seguir el flujo desde la pantalla (componente) hasta el
+servicio del frontend, la petición HTTP al backend, el controlador, el
+servicio y el repositorio en el backend.
+
+================================================================================
+  Fin del documento
+================================================================================

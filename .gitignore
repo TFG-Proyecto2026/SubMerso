@@ -14,6 +14,8 @@
 
 # Environment files
 **/.env
+# Spring: credenciales locales (cada dev tiene la suya, no se sube)
+/backend/src/main/resources/application-local.properties
 
 # Angular CLI and build artefacts
 /.angular-cli.json

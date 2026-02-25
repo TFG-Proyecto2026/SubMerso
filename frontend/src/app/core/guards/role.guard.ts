@@ -15,9 +15,8 @@ export const roleGuard: CanActivateFn = (route, state) => {
   }
 
   if (requiredRoles && requiredRoles.length > 0) {
-    if (requiredRoles.includes(currentUser.role)) {
-      return true;
-    }
+    const hasRole = currentUser.roles?.some(r => requiredRoles.includes(r)) ?? requiredRoles.includes(currentUser.role);
+    if (hasRole) return true;
     router.navigate(['/']);
     return false;
   }
