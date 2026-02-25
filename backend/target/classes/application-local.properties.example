@@ -1,8 +1,0 @@
-# Copia este archivo como application-local.properties y rellena con las credenciales
-# que te pase Marcos. NO subas application-local.properties a GitHub.
-#
-# spring.profiles.active=local  (ya está en application.properties para que lo cargue)
-#
-# MongoDB Atlas (sustituye por tu URI real):
-# spring.data.mongodb.uri=mongodb+srv://USUARIO:PASSWORD@clusterxxx.mongodb.net/submerso_db?retryWrites=true&w=majority
-# spring.data.mongodb.database=submerso_db
