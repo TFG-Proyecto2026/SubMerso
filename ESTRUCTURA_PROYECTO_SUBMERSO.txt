@@ -1,6 +1,5 @@
 ================================================================================
-  SUBMERSO - ESTRUCTURA DEL PROYECTO Y GUÍA DE CLASES
-  (Lenguaje sencillo para entender qué hace cada parte)
+  SUBMERSO - ESTRUCTURA DEL PROYECTO Y GUÍA DE LAS CLASES Y FICHEROS
 ================================================================================
 
 SubMerso es una aplicación de buceo con tres pilares: una red social entre
@@ -450,10 +449,4 @@ Cada “pantalla” o flujo suele ser un componente con su .ts (lógica), .html
   · shared = navbar, footer, tarjetas, modales, pipes y directivas reutilizables.
   · app.routes = qué URL muestra qué componente y con qué protección.
 
-Con esto se puede seguir el flujo desde la pantalla (componente) hasta el
-servicio del frontend, la petición HTTP al backend, el controlador, el
-servicio y el repositorio en el backend.
 
-================================================================================
-  Fin del documento
-================================================================================
