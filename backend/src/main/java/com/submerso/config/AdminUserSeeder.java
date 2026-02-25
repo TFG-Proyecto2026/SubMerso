@@ -33,23 +33,27 @@ public class AdminUserSeeder {
     @Bean
     CommandLineRunner createAdminUserIfMissing() {
         return args -> {
-            if (userRepository.existsByEmail(ADMIN_EMAIL)) {
-                log.debug("Usuario admin ya existe, no se crea.");
-                return;
+            try {
+                if (userRepository.existsByEmail(ADMIN_EMAIL)) {
+                    log.debug("Usuario admin ya existe, no se crea.");
+                    return;
+                }
+                User admin = User.builder()
+                        .email(ADMIN_EMAIL)
+                        .username(ADMIN_USERNAME)
+                        .password(passwordEncoder.encode(ADMIN_PASSWORD))
+                        .firstName(ADMIN_FIRST_NAME)
+                        .lastName(ADMIN_LAST_NAME)
+                        .profile(new Profile())
+                        .roles(Set.of("ROLE_USER", "ROLE_ADMIN"))
+                        .enabled(true)
+                        .accountNonLocked(true)
+                        .build();
+                userRepository.save(admin);
+                log.info("Usuario admin creado. Inicia sesión con: {} / {}", ADMIN_EMAIL, ADMIN_PASSWORD);
+            } catch (Exception e) {
+                log.warn("No se pudo crear el usuario admin (¿MongoDB conectado?). La app arranca igual. Error: {}", e.getMessage());
             }
-            User admin = User.builder()
-                    .email(ADMIN_EMAIL)
-                    .username(ADMIN_USERNAME)
-                    .password(passwordEncoder.encode(ADMIN_PASSWORD))
-                    .firstName(ADMIN_FIRST_NAME)
-                    .lastName(ADMIN_LAST_NAME)
-                    .profile(new Profile())
-                    .roles(Set.of("ROLE_USER", "ROLE_ADMIN"))
-                    .enabled(true)
-                    .accountNonLocked(true)
-                    .build();
-            userRepository.save(admin);
-            log.info("Usuario admin creado. Inicia sesión con: {} / {}", ADMIN_EMAIL, ADMIN_PASSWORD);
         };
     }
 }
