@@ -83,7 +83,8 @@ export class RegisterComponent implements OnInit {
 
     this.authService.register({ username, email, password, fullName }).subscribe({
       next: () => {
-        this.router.navigate(['/feed']);
+        const target = this.authService.isAdmin() ? '/admin' : '/feed';
+        this.router.navigate([target]);
       },
       error: (error) => {
         this.errorMessage = error.message;

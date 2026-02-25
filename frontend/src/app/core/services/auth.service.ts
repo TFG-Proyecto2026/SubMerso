@@ -1,11 +1,11 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, tap, catchError, throwError, BehaviorSubject } from 'rxjs';
+import { Observable, tap, catchError, throwError, map, BehaviorSubject } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 export interface User {
-  id: number;
+  id: string;
   username: string;
   email: string;
   fullName: string;
@@ -17,6 +17,7 @@ export interface User {
   followers?: number;
   following?: number;
   role: string;
+  roles?: string[];
   createdAt?: string;
 }
 
@@ -32,9 +33,25 @@ export interface RegisterRequest {
   fullName: string;
 }
 
+/** Respuesta del backend (dentro de ApiResponse.data) */
+export interface AuthResponseBackend {
+  accessToken: string;
+  refreshToken?: string;
+  userId: string;
+  email: string;
+  username: string;
+  roles?: string[];
+}
+
 export interface AuthResponse {
   token: string;
   user: User;
+  message?: string;
+}
+
+/** Wrapper de la API: { success, message, data } */
+interface ApiWrapper<T> {
+  data?: T;
   message?: string;
 }
 
@@ -60,14 +77,16 @@ export class AuthService {
   }
 
   login(credentials: LoginRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.API_URL}/login`, credentials).pipe(
+    return this.http.post<ApiWrapper<AuthResponseBackend>>(`${this.API_URL}/login`, credentials).pipe(
+      map(res => this.normalizeAuthResponse(res)),
       tap(response => this.handleAuthSuccess(response)),
       catchError(error => this.handleAuthError(error))
     );
   }
 
   register(userData: RegisterRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.API_URL}/register`, userData).pipe(
+    return this.http.post<ApiWrapper<AuthResponseBackend>>(`${this.API_URL}/register`, userData).pipe(
+      map(res => this.normalizeAuthResponse(res)),
       tap(response => this.handleAuthSuccess(response)),
       catchError(error => this.handleAuthError(error))
     );
@@ -98,7 +117,30 @@ export class AuthService {
     return this.isAuthenticatedSignal();
   }
 
+  /** True si el usuario actual tiene rol ROLE_ADMIN */
+  isAdmin(): boolean {
+    const user = this.getCurrentUser();
+    return !!user?.roles?.includes('ROLE_ADMIN');
+  }
+
+  private normalizeAuthResponse(res: ApiWrapper<AuthResponseBackend>): AuthResponse {
+    const data = res.data;
+    if (data) {
+      const user: User = {
+        id: data.userId,
+        username: data.username,
+        email: data.email,
+        fullName: data.username,
+        role: data.roles?.[0] ?? 'ROLE_USER',
+        roles: data.roles ?? ['ROLE_USER']
+      };
+      return { token: data.accessToken, user };
+    }
+    return { token: '', user: {} as User };
+  }
+
   private handleAuthSuccess(response: AuthResponse): void {
+    if (!response?.token || !response?.user) return;
     localStorage.setItem(this.TOKEN_KEY, response.token);
     localStorage.setItem(this.USER_KEY, JSON.stringify(response.user));
     this.currentUserSubject.next(response.user);
@@ -107,9 +149,9 @@ export class AuthService {
 
   private handleAuthError(error: any): Observable<never> {
     let errorMessage = 'Ha ocurrido un error. Inténtalo de nuevo.';
-    
-    if (error.error?.message) {
-      errorMessage = error.error.message;
+    const body = error.error;
+    if (body?.message) {
+      errorMessage = body.message;
     } else if (error.status === 401) {
       errorMessage = 'Credenciales inválidas';
     } else if (error.status === 409) {
@@ -117,7 +159,6 @@ export class AuthService {
     } else if (error.status === 0) {
       errorMessage = 'No se puede conectar con el servidor';
     }
-
     return throwError(() => new Error(errorMessage));
   }
 
@@ -125,7 +166,8 @@ export class AuthService {
     const userStr = localStorage.getItem(this.USER_KEY);
     if (userStr) {
       try {
-        return JSON.parse(userStr);
+        const u = JSON.parse(userStr);
+        if (u && typeof u.id !== 'undefined') return u;
       } catch {
         return null;
       }
@@ -136,7 +178,6 @@ export class AuthService {
   private hasValidToken(): boolean {
     const token = this.getToken();
     if (!token) return false;
-
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
       const expiry = payload.exp * 1000;

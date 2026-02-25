@@ -54,7 +54,8 @@ export class LoginComponent implements OnInit {
 
     this.authService.login({ email, password }).subscribe({
       next: () => {
-        this.router.navigate([this.returnUrl]);
+        const target = this.authService.isAdmin() ? '/admin' : (this.returnUrl || '/feed');
+        this.router.navigate([target]);
       },
       error: (error) => {
         this.errorMessage = error.message;

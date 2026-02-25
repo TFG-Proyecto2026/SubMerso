@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -177,5 +178,22 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
         return user.getFollowing().contains(targetUserId);
+    }
+    
+    public List<com.submerso.dto.user.AdminUserDTO> findAllForAdmin() {
+        return userRepository.findAll().stream()
+                .map(this::toAdminUserDTO)
+                .collect(Collectors.toList());
+    }
+    
+    private com.submerso.dto.user.AdminUserDTO toAdminUserDTO(User user) {
+        return com.submerso.dto.user.AdminUserDTO.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .roles(user.getRoles())
+                .enabled(user.getEnabled())
+                .createdAt(user.getCreatedAt() != null ? user.getCreatedAt().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) : null)
+                .build();
     }
 }
