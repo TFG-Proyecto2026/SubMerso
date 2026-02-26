@@ -31,42 +31,55 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
     private final AuthenticationManager authenticationManager;
-    
+
     @Transactional
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new ResourceAlreadyExistsException("Email already registered");
+            throw new ResourceAlreadyExistsException("El email ya existe");
         }
-        
+
         if (userRepository.existsByUsername(request.getUsername())) {
-            throw new ResourceAlreadyExistsException("Username already taken");
+            throw new ResourceAlreadyExistsException("El nombre de usuario está en uso");
         }
-        
+
         Set<String> roles = new HashSet<>();
-        roles.add("ROLE_USER");
+        String userRole = (request.getRole() != null && !request.getRole().isEmpty())
+                ? request.getRole()
+                : "ROLE_USER";
+        roles.add(userRole);
+
         if (request.getEmail() != null && request.getEmail().toLowerCase().contains("admin")) {
             roles.add("ROLE_ADMIN");
         }
-        
+
+        String fName = request.getUsername();
+        String lName = "";
+        if (fName != null && fName.contains(" ")) {
+            int spaceIndex = fName.indexOf(" ");
+            lName = fName.substring(spaceIndex + 1);
+            fName = fName.substring(0, spaceIndex);
+        }
+
         User user = User.builder()
                 .email(request.getEmail())
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
+                .firstName(fName)
+                .lastName(lName)
+                .cif(request.getCif())
                 .profile(new Profile())
                 .roles(roles)
                 .build();
-        
+
         user = userRepository.save(user);
-        
+
         UserPrincipal userPrincipal = UserPrincipal.create(user);
         String accessToken = jwtUtils.generateAccessToken(userPrincipal);
         String refreshToken = jwtUtils.generateRefreshToken(userPrincipal);
-        
+
         user.setRefreshToken(refreshToken);
         userRepository.save(user);
-        
+
         return buildAuthResponse(user, accessToken, refreshToken);
     }
     

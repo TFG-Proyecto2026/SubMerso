@@ -28,4 +28,6 @@ public class RegisterRequest {
     
     private String firstName;
     private String lastName;
+    private String cif;
+    private String role;
 }

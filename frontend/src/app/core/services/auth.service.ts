@@ -31,6 +31,8 @@ export interface RegisterRequest {
   email: string;
   password: string;
   fullName: string;
+  role?: string;
+  cif?: string;
 }
 
 /** Respuesta del backend (dentro de ApiResponse.data) */

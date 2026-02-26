@@ -36,6 +36,8 @@ public class User {
     
     private String firstName;
     private String lastName;
+
+    private String cif;
     
     @Builder.Default
     private Profile profile = new Profile();
