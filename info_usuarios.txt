@@ -1,0 +1,29 @@
+================================================================================
+  SUBMERSO - LISTA DE TODOS LOS USUARIOS DE LA BASE DE DATOS
+================================================================================
+
+  Fuente:           Base de datos Submerso (MongoDB) - todos los usuarios
+  Total de usuarios: 2
+  Exportado:        3/3/2026, 17:44:47
+
+  NOTA CONTRASEÑAS: El admin tiene contraseña en claro (abajo). El resto de
+  usuarios tienen la contraseña guardada solo en forma de hash (BCrypt) en la
+  base de datos; no se puede recuperar ni mostrar.
+
+--------------------------------------------------------------------------------
+  LISTADO COMPLETO (con contraseña cuando se conoce)
+--------------------------------------------------------------------------------
+
+  1. admin@submerso.com
+     Usuario:        admin
+     Roles:          ROLE_ADMIN, ROLE_USER
+     Activo:         Sí
+     Fecha registro: 2026-03-03T16:32:51.065
+       Contraseña:       Admin.1234
+
+  2. merinoobuenoo@gmail.com
+     Usuario:        carmencita
+     Roles:          ROLE_USER
+     Activo:         Sí
+     Fecha registro: 2026-03-03T17:01:24.889
+       Contraseña:       (hash en BD; no recuperable)
