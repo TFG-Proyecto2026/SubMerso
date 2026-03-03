@@ -1,0 +1,104 @@
+================================================================================
+  SUBMERSO - CONTROL DE LO QUE HEMOS HECHO Y QUÉ HACE CADA PÁGINA
+================================================================================
+
+¿QUÉ ES SUBMERSO?
+-----------------
+SubMerso es una red social de buceo. Es una página web donde la gente que bucea
+puede registrarse, ver perfiles de otros, reservar cursos o viajes, llevar un
+diario de inmersiones (logbook) y usar un asistente inteligente (DeepBlue).
+
+Equipo: Marcos Montes, Sergio Cayetano, Carmen Merino.
+
+
+LO QUE HEMOS HECHO EN ESTE PROYECTO (RESUMEN)
+----------------------------------------------
+- Configurar la forma de arrancar la página en tu ordenador:
+  · Backend (servidor): se arranca con MongoDB en local, sin usar la nube Atlas.
+  · Frontend (lo que ves en el navegador): se arranca con npm start.
+- Crear un perfil "localdb" para usar la base de datos MongoDB que tienes
+  instalada en el PC, así no hace falta configurar usuario/contraseña de Atlas.
+- Poder entrar en la web con el usuario administrador (admin@submerso.com).
+
+
+CÓMO ENTRAR A LA PÁGINA EN TU PC
+---------------------------------
+1. Tener MongoDB abierto en el puerto 27017 (servicio de Windows o similar).
+2. Arrancar el backend (en la carpeta backend, con perfil localdb).
+3. Arrancar el frontend (en la carpeta frontend, npm start).
+4. Abrir el navegador en: http://localhost:4200
+5. Iniciar sesión con el usuario admin (ver info_usuarios.txt).
+
+Para tener en info_usuarios.txt la lista de TODOS los usuarios (los que ya están
+y los nuevos registros): con el backend en marcha, ejecuta en la raíz del
+proyecto:  node scripts/export-users.js
+Eso actualiza info_usuarios.txt con el listado completo.
+
+
+QUÉ HACE CADA PÁGINA / CADA SECCIÓN DE LA WEB
+----------------------------------------------
+
+· Página de inicio (/)
+  Lo primero que ves al entrar. Presentación de SubMerso.
+
+· Login (/login)
+  Pantalla para iniciar sesión con email y contraseña.
+
+· Registro (/register)
+  Pantalla para darse de alta como usuario nuevo (nombre, email, contraseña, etc.).
+
+· Perfil de usuario (/profile/nombre_de_usuario)
+  Ver el perfil público de un buceador: su foto, estadísticas, actividad.
+
+· Editar mi perfil (/profile/edit)
+  (Solo si has iniciado sesión.) Donde el usuario cambia sus datos, foto, etc.
+
+· Feed (/feed)
+  (Solo con sesión.) Muro de actividad: publicaciones, fotos e inmersiones de
+  la gente a la que sigues.
+
+· Seguidores (/followers)
+  (Solo con sesión.) Lista de quién te sigue y a quién sigues.
+
+· Marketplace (/marketplace)
+  Buscador para reservar viajes y cursos de buceo (centros, fechas, etc.).
+
+· Reserva (/marketplace/booking/:id)
+  (Solo con sesión.) Pantalla para completar una reserva concreta.
+
+· Pago (/marketplace/payment)
+  (Solo con sesión.) Pantalla para pagar (integración con pasarela de pagos).
+
+· Logbook - Lista (/logbook)
+  (Solo con sesión.) Listado de tus inmersiones (diario de buceo).
+
+· Logbook - Detalle (/logbook/:id)
+  (Solo con sesión.) Ver los detalles de una inmersión concreta.
+
+· Validación QR (/logbook/validate/:qr)
+  Pantalla para validar una inmersión con código QR (por ejemplo en el centro).
+
+· DeepBlue - Chat (/deepblue)
+  (Solo con sesión.) Asistente inteligente por chat (recomendaciones, dudas).
+
+· Recomendaciones (/recommendations)
+  (Solo con sesión.) Recomendaciones del asistente (viajes, compañeros, equipo).
+
+· Panel de administración (/admin)
+  (Solo para el usuario administrador.) Pantalla para gestionar usuarios y
+  contenido de la web.
+
+
+NOTAS PARA EL CONTROL
+----------------------
+
+- El proyecto usa: Angular en el frontend, Spring Boot en el backend y
+  MongoDB como base de datos.
+
+- Lista completa de usuarios en info_usuarios.txt:
+  Cada vez que quieras actualizar el archivo con TODOS los usuarios (los que
+  ya estaban y los nuevos registros), con el backend arrancado ejecuta:
+    node scripts/export-users.js
+  El archivo info_usuarios.txt se actualizará con el listado completo.
+
+
