@@ -1,31 +1,22 @@
 <div class="min-h-screen flex flex-col relative overflow-hidden">
-  <!-- Burbujas animadas globales -->
-  <div class="bubbles-container">
-    <div class="bubble-global"></div>
-    <div class="bubble-global"></div>
-    <div class="bubble-global"></div>
-    <div class="bubble-global"></div>
-    <div class="bubble-global"></div>
-    <div class="bubble-global"></div>
-    <div class="bubble-global"></div>
-    <div class="bubble-global"></div>
-    <div class="bubble-global"></div>
-    <div class="bubble-global"></div>
-    <div class="bubble-global"></div>
-    <div class="bubble-global"></div>
-    <div class="bubble-global"></div>
-    <div class="bubble-global"></div>
-    <div class="bubble-global"></div>
-    <div class="bubble-global"></div>
-    <div class="bubble-global"></div>
-    <div class="bubble-global"></div>
-    <div class="bubble-global"></div>
-    <div class="bubble-global"></div>
+  <!-- Burbujas animadas globales (pastel, de footer a nav en todas las páginas) -->
+  <div class="bubbles-container" aria-hidden="true">
+    @for (b of bubbles; track b) {
+      <div class="bubble-global"></div>
+    }
   </div>
   
   <app-navbar></app-navbar>
-  <main class="flex-grow relative z-10">
-    <router-outlet></router-outlet>
+  <main class="flex-grow relative z-10 overflow-hidden">
+    <!-- Burbujas azul oscuro solo en el cuerpo del main (pocas, más transparentes) -->
+    <div class="main-bubbles" aria-hidden="true">
+      @for (b of mainBubbles; track b) {
+        <div class="bubble-main"></div>
+      }
+    </div>
+    <div class="relative z-10">
+      <router-outlet></router-outlet>
+    </div>
   </main>
   <app-footer></app-footer>
 </div>

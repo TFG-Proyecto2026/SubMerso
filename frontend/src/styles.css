@@ -113,13 +113,14 @@ body {
   }
 }
 
-/* ========== BURBUJAS GLOBALES ANIMADAS ========== */
+/* ========== BURBUJAS GLOBALES ANIMADAS (pastel, todas las páginas) ========== */
 .bubbles-container {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
+  min-height: 100vh;
   pointer-events: none;
   z-index: 1;
   overflow: hidden;
@@ -127,208 +128,177 @@ body {
 
 .bubble-global {
   position: absolute;
-  bottom: -100px;
-  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8), rgba(0, 153, 230, 0.3));
+  bottom: -80px;
   border-radius: 50%;
   opacity: 0;
-  animation: rise 15s infinite ease-in;
-  box-shadow: 
-    inset 0 0 10px rgba(255, 255, 255, 0.5),
-    0 0 20px rgba(0, 153, 230, 0.2);
+  animation: rise 14s infinite ease-in;
+  box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.35);
+}
+
+/* Colores pastel más transparentes (6 variantes) */
+.bubble-global:nth-child(6n+1) {
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.55), rgba(174, 214, 241, 0.4));
+}
+.bubble-global:nth-child(6n+2) {
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.55), rgba(255, 182, 193, 0.42));
+}
+.bubble-global:nth-child(6n+3) {
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.55), rgba(189, 252, 201, 0.4));
+}
+.bubble-global:nth-child(6n+4) {
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.55), rgba(230, 218, 255, 0.42));
+}
+.bubble-global:nth-child(6n+5) {
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.55), rgba(255, 218, 185, 0.42));
+}
+.bubble-global:nth-child(6n+6) {
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.55), rgba(204, 255, 255, 0.4));
 }
 
 .bubble-global::before {
   content: '';
   position: absolute;
-  top: 10%;
-  left: 20%;
-  width: 30%;
-  height: 30%;
-  background: rgba(255, 255, 255, 0.6);
+  top: 12%;
+  left: 22%;
+  width: 28%;
+  height: 28%;
+  background: rgba(255, 255, 255, 0.45);
   border-radius: 50%;
   filter: blur(2px);
 }
 
-.bubble-global:nth-child(1) {
-  width: 40px;
-  height: 40px;
-  left: 5%;
-  animation-duration: 12s;
-  animation-delay: 0s;
-}
+/* Posición horizontal (10 columnas) */
+.bubble-global:nth-child(10n+1) { left: 1%; }
+.bubble-global:nth-child(10n+2) { left: 11%; }
+.bubble-global:nth-child(10n+3) { left: 21%; }
+.bubble-global:nth-child(10n+4) { left: 31%; }
+.bubble-global:nth-child(10n+5) { left: 41%; }
+.bubble-global:nth-child(10n+6) { left: 51%; }
+.bubble-global:nth-child(10n+7) { left: 61%; }
+.bubble-global:nth-child(10n+8) { left: 71%; }
+.bubble-global:nth-child(10n+9) { left: 81%; }
+.bubble-global:nth-child(10n+10) { left: 91%; }
 
-.bubble-global:nth-child(2) {
-  width: 25px;
-  height: 25px;
-  left: 15%;
-  animation-duration: 14s;
-  animation-delay: 1s;
-}
+/* Tamaños (5 variantes) */
+.bubble-global:nth-child(5n+1) { width: 14px; height: 14px; }
+.bubble-global:nth-child(5n+2) { width: 22px; height: 22px; }
+.bubble-global:nth-child(5n+3) { width: 30px; height: 30px; }
+.bubble-global:nth-child(5n+4) { width: 40px; height: 40px; }
+.bubble-global:nth-child(5n+5) { width: 50px; height: 50px; }
 
-.bubble-global:nth-child(3) {
-  width: 55px;
-  height: 55px;
-  left: 25%;
-  animation-duration: 16s;
-  animation-delay: 2s;
-}
+/* Duración de animación (4 variantes) */
+.bubble-global:nth-child(4n+1) { animation-duration: 11s; }
+.bubble-global:nth-child(4n+2) { animation-duration: 13s; }
+.bubble-global:nth-child(4n+3) { animation-duration: 15s; }
+.bubble-global:nth-child(4n+4) { animation-duration: 17s; }
 
-.bubble-global:nth-child(4) {
-  width: 30px;
-  height: 30px;
-  left: 35%;
-  animation-duration: 11s;
-  animation-delay: 0.5s;
-}
-
-.bubble-global:nth-child(5) {
-  width: 45px;
-  height: 45px;
-  left: 45%;
-  animation-duration: 13s;
-  animation-delay: 3s;
-}
-
-.bubble-global:nth-child(6) {
-  width: 20px;
-  height: 20px;
-  left: 55%;
-  animation-duration: 15s;
-  animation-delay: 1.5s;
-}
-
-.bubble-global:nth-child(7) {
-  width: 35px;
-  height: 35px;
-  left: 65%;
-  animation-duration: 12s;
-  animation-delay: 4s;
-}
-
-.bubble-global:nth-child(8) {
-  width: 50px;
-  height: 50px;
-  left: 75%;
-  animation-duration: 14s;
-  animation-delay: 2.5s;
-}
-
-.bubble-global:nth-child(9) {
-  width: 28px;
-  height: 28px;
-  left: 85%;
-  animation-duration: 16s;
-  animation-delay: 0.8s;
-}
-
-.bubble-global:nth-child(10) {
-  width: 38px;
-  height: 38px;
-  left: 95%;
-  animation-duration: 11s;
-  animation-delay: 3.5s;
-}
-
-.bubble-global:nth-child(11) {
-  width: 22px;
-  height: 22px;
-  left: 10%;
-  animation-duration: 13s;
-  animation-delay: 5s;
-}
-
-.bubble-global:nth-child(12) {
-  width: 48px;
-  height: 48px;
-  left: 20%;
-  animation-duration: 15s;
-  animation-delay: 4.5s;
-}
-
-.bubble-global:nth-child(13) {
-  width: 32px;
-  height: 32px;
-  left: 30%;
-  animation-duration: 12s;
-  animation-delay: 6s;
-}
-
-.bubble-global:nth-child(14) {
-  width: 42px;
-  height: 42px;
-  left: 40%;
-  animation-duration: 14s;
-  animation-delay: 5.5s;
-}
-
-.bubble-global:nth-child(15) {
-  width: 26px;
-  height: 26px;
-  left: 50%;
-  animation-duration: 16s;
-  animation-delay: 7s;
-}
-
-.bubble-global:nth-child(16) {
-  width: 36px;
-  height: 36px;
-  left: 60%;
-  animation-duration: 11s;
-  animation-delay: 6.5s;
-}
-
-.bubble-global:nth-child(17) {
-  width: 52px;
-  height: 52px;
-  left: 70%;
-  animation-duration: 13s;
-  animation-delay: 8s;
-}
-
-.bubble-global:nth-child(18) {
-  width: 24px;
-  height: 24px;
-  left: 80%;
-  animation-duration: 15s;
-  animation-delay: 7.5s;
-}
-
-.bubble-global:nth-child(19) {
-  width: 44px;
-  height: 44px;
-  left: 90%;
-  animation-duration: 12s;
-  animation-delay: 9s;
-}
-
-.bubble-global:nth-child(20) {
-  width: 34px;
-  height: 34px;
-  left: 2%;
-  animation-duration: 14s;
-  animation-delay: 8.5s;
-}
+/* Retraso (8 variantes) para que no salgan todas a la vez */
+.bubble-global:nth-child(8n+1) { animation-delay: 0s; }
+.bubble-global:nth-child(8n+2) { animation-delay: 1.5s; }
+.bubble-global:nth-child(8n+3) { animation-delay: 3s; }
+.bubble-global:nth-child(8n+4) { animation-delay: 4.5s; }
+.bubble-global:nth-child(8n+5) { animation-delay: 0.8s; }
+.bubble-global:nth-child(8n+6) { animation-delay: 2.2s; }
+.bubble-global:nth-child(8n+7) { animation-delay: 5s; }
+.bubble-global:nth-child(8n+8) { animation-delay: 6.5s; }
 
 @keyframes rise {
   0% {
-    bottom: -100px;
+    bottom: -80px;
     opacity: 0;
-    transform: translateX(0) scale(0.8);
+    transform: translateX(0) scale(0.85);
   }
-  10% {
-    opacity: 0.6;
+  8% {
+    opacity: 0.5;
   }
   50% {
-    opacity: 0.4;
-    transform: translateX(30px) scale(1);
+    opacity: 0.35;
+    transform: translateX(25px) scale(1);
   }
-  70% {
-    opacity: 0.3;
+  75% {
+    opacity: 0.22;
   }
   100% {
     bottom: 110vh;
     opacity: 0;
-    transform: translateX(-20px) scale(1.1);
+    transform: translateX(-15px) scale(1.05);
+  }
+}
+
+/* ========== BURBUJAS EN EL MAIN (azul oscuro, muy transparentes, pocas) ========== */
+.main-bubbles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.bubble-main {
+  position: absolute;
+  bottom: -40px;
+  border-radius: 50%;
+  opacity: 0;
+  animation: rise-main 18s infinite ease-in;
+  background: radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.2), rgba(25, 55, 95, 0.25));
+  box-shadow: inset 0 0 8px rgba(255, 255, 255, 0.15);
+}
+
+.bubble-main::before {
+  content: '';
+  position: absolute;
+  top: 15%;
+  left: 25%;
+  width: 25%;
+  height: 25%;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  filter: blur(1px);
+}
+
+/* Posición horizontal en el main */
+.bubble-main:nth-child(7n+1) { left: 8%; }
+.bubble-main:nth-child(7n+2) { left: 25%; }
+.bubble-main:nth-child(7n+3) { left: 42%; }
+.bubble-main:nth-child(7n+4) { left: 58%; }
+.bubble-main:nth-child(7n+5) { left: 75%; }
+.bubble-main:nth-child(7n+6) { left: 15%; }
+.bubble-main:nth-child(7n+7) { left: 88%; }
+
+/* Tamaños discretos */
+.bubble-main:nth-child(5n+1) { width: 12px; height: 12px; }
+.bubble-main:nth-child(5n+2) { width: 18px; height: 18px; }
+.bubble-main:nth-child(5n+3) { width: 24px; height: 24px; }
+.bubble-main:nth-child(5n+4) { width: 16px; height: 16px; }
+.bubble-main:nth-child(5n+5) { width: 20px; height: 20px; }
+
+.bubble-main:nth-child(3n+1) { animation-duration: 16s; animation-delay: 0s; }
+.bubble-main:nth-child(3n+2) { animation-duration: 20s; animation-delay: 3s; }
+.bubble-main:nth-child(3n+3) { animation-duration: 22s; animation-delay: 6s; }
+
+@keyframes rise-main {
+  0% {
+    bottom: -40px;
+    opacity: 0;
+    transform: translateX(0) scale(0.9);
+  }
+  6% {
+    opacity: 0.28;
+  }
+  50% {
+    opacity: 0.2;
+    transform: translateX(15px) scale(1);
+  }
+  85% {
+    opacity: 0.12;
+  }
+  100% {
+    bottom: 100%;
+    opacity: 0;
+    transform: translateX(-10px) scale(0.95);
   }
 }
 
