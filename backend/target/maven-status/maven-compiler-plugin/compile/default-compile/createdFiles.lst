@@ -1,5 +1,6 @@
 com\submerso\controller\UserController.class
 com\submerso\exception\CustomExceptions$InvalidTokenException.class
+com\submerso\config\CloudinaryConfig.class
 com\submerso\security\UserPrincipal.class
 com\submerso\dto\auth\RegisterRequest.class
 com\submerso\dto\marketplace\BookingDTO.class
@@ -7,6 +8,7 @@ com\submerso\exception\GlobalExceptionHandler.class
 com\submerso\model\Payment.class
 com\submerso\service\AuthService.class
 com\submerso\dto\auth\AuthResponse.class
+com\submerso\service\CloudinaryService.class
 com\submerso\utils\JwtUtils.class
 com\submerso\dto\auth\RefreshTokenRequest$RefreshTokenRequestBuilder.class
 com\submerso\model\Comment$CommentBuilder.class
