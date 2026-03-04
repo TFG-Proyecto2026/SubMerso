@@ -15,8 +15,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-03-04T11:23:03+0100",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 25 (Oracle Corporation)"
+    date = "2026-03-04T16:13:26+0100",
+    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.45.0.v20260224-0835, environment: Java 21.0.7 (Eclipse Adoptium)"
 )
 @Component
 public class UserMapperImpl implements UserMapper {
@@ -29,17 +29,17 @@ public class UserMapperImpl implements UserMapper {
 
         UserDTO.UserDTOBuilder userDTO = UserDTO.builder();
 
-        userDTO.id( user.getId() );
+        userDTO.createdAt( user.getCreatedAt() );
         userDTO.email( user.getEmail() );
-        userDTO.username( user.getUsername() );
         userDTO.firstName( user.getFirstName() );
+        userDTO.id( user.getId() );
         userDTO.lastName( user.getLastName() );
         userDTO.profile( toProfileDTO( user.getProfile() ) );
         Set<String> set = user.getRoles();
         if ( set != null ) {
             userDTO.roles( new LinkedHashSet<String>( set ) );
         }
-        userDTO.createdAt( user.getCreatedAt() );
+        userDTO.username( user.getUsername() );
 
         userDTO.followersCount( user.getFollowers() != null ? user.getFollowers().size() : 0 );
         userDTO.followingCount( user.getFollowing() != null ? user.getFollowing().size() : 0 );
@@ -55,20 +55,20 @@ public class UserMapperImpl implements UserMapper {
 
         ProfileDTO.ProfileDTOBuilder profileDTO = ProfileDTO.builder();
 
-        profileDTO.bio( profile.getBio() );
         profileDTO.avatar( profile.getAvatar() );
-        profileDTO.location( profile.getLocation() );
-        List<String> list = profile.getCertifications();
+        List<String> list = profile.getBadges();
         if ( list != null ) {
-            profileDTO.certifications( new ArrayList<String>( list ) );
+            profileDTO.badges( new ArrayList<String>( list ) );
         }
-        profileDTO.totalDives( profile.getTotalDives() );
-        List<String> list1 = profile.getBadges();
+        profileDTO.bio( profile.getBio() );
+        List<String> list1 = profile.getCertifications();
         if ( list1 != null ) {
-            profileDTO.badges( new ArrayList<String>( list1 ) );
+            profileDTO.certifications( new ArrayList<String>( list1 ) );
         }
-        profileDTO.website( profile.getWebsite() );
+        profileDTO.location( profile.getLocation() );
         profileDTO.phoneNumber( profile.getPhoneNumber() );
+        profileDTO.totalDives( profile.getTotalDives() );
+        profileDTO.website( profile.getWebsite() );
 
         return profileDTO.build();
     }
@@ -81,20 +81,20 @@ public class UserMapperImpl implements UserMapper {
 
         Profile.ProfileBuilder profile = Profile.builder();
 
-        profile.bio( profileDTO.getBio() );
         profile.avatar( profileDTO.getAvatar() );
-        profile.location( profileDTO.getLocation() );
-        List<String> list = profileDTO.getCertifications();
+        List<String> list = profileDTO.getBadges();
         if ( list != null ) {
-            profile.certifications( new ArrayList<String>( list ) );
+            profile.badges( new ArrayList<String>( list ) );
         }
-        profile.totalDives( profileDTO.getTotalDives() );
-        List<String> list1 = profileDTO.getBadges();
+        profile.bio( profileDTO.getBio() );
+        List<String> list1 = profileDTO.getCertifications();
         if ( list1 != null ) {
-            profile.badges( new ArrayList<String>( list1 ) );
+            profile.certifications( new ArrayList<String>( list1 ) );
         }
-        profile.website( profileDTO.getWebsite() );
+        profile.location( profileDTO.getLocation() );
         profile.phoneNumber( profileDTO.getPhoneNumber() );
+        profile.totalDives( profileDTO.getTotalDives() );
+        profile.website( profileDTO.getWebsite() );
 
         return profile.build();
     }
@@ -109,10 +109,10 @@ public class UserMapperImpl implements UserMapper {
 
         userSummaryDTO.avatar( userProfileAvatar( user ) );
         userSummaryDTO.bio( userProfileBio( user ) );
-        userSummaryDTO.id( user.getId() );
-        userSummaryDTO.username( user.getUsername() );
         userSummaryDTO.firstName( user.getFirstName() );
+        userSummaryDTO.id( user.getId() );
         userSummaryDTO.lastName( user.getLastName() );
+        userSummaryDTO.username( user.getUsername() );
 
         return userSummaryDTO.build();
     }
@@ -139,9 +139,6 @@ public class UserMapperImpl implements UserMapper {
             return;
         }
 
-        if ( userDTO.getUsername() != null ) {
-            user.setUsername( userDTO.getUsername() );
-        }
         if ( userDTO.getFirstName() != null ) {
             user.setFirstName( userDTO.getFirstName() );
         }
@@ -150,6 +147,9 @@ public class UserMapperImpl implements UserMapper {
         }
         if ( userDTO.getProfile() != null ) {
             user.setProfile( toProfile( userDTO.getProfile() ) );
+        }
+        if ( userDTO.getUsername() != null ) {
+            user.setUsername( userDTO.getUsername() );
         }
     }
 
