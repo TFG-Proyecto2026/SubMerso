@@ -1,0 +1,237 @@
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="container mx-auto px-4 max-w-4xl">
+    <div class="flex items-center justify-between mb-6">
+      <a routerLink="/logbook" class="text-ocean-600 hover:text-ocean-700 flex items-center gap-2">
+        <i class="bi bi-arrow-left"></i> Volver al Logbook
+      </a>
+    </div>
+
+    <div class="flex items-center gap-3 mb-2">
+      <span class="text-4xl" aria-hidden="true">🤿</span>
+      <div>
+        <h1 class="text-3xl font-bold text-gray-800">Nueva inmersión</h1>
+        <p class="text-gray-600 text-sm mt-0.5">Registra los datos de tu inmersión. Los campos con * son obligatorios.</p>
+      </div>
+    </div>
+
+    @if (error) {
+      <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+        <i class="bi bi-exclamation-circle me-2"></i>{{ error }}
+      </div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="enviar()">
+      <!-- Datos generales -->
+      <div class="card-ocean p-6 mb-6">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4 border-b border-gray-200 pb-2 flex items-center gap-2">
+          <i class="bi bi-journal-text text-ocean-500"></i> Datos generales
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1"><i class="bi bi-hash text-ocean-500 me-1"></i>Nº inmersión</label>
+            <input type="number" formControlName="diveNumber" class="input-ocean" min="1" placeholder="Ej. 1" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1"><i class="bi bi-calendar3 text-ocean-500 me-1"></i>Fecha *</label>
+            <input type="date" formControlName="diveDate" class="input-ocean" [class.border-red-500]="form.get('diveDate')?.invalid && form.get('diveDate')?.touched" />
+          </div>
+          <div class="md:col-span-1">
+            <label class="block text-sm font-medium text-gray-700 mb-1"><i class="bi bi-geo-alt text-ocean-500 me-1"></i>Ubicación *</label>
+            <input type="text" formControlName="location" class="input-ocean" placeholder="Lugar, centro o zona" [class.border-red-500]="form.get('location')?.invalid && form.get('location')?.touched" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Perfil y tiempos -->
+      <div class="card-ocean p-6 mb-6">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4 border-b border-gray-200 pb-2 flex items-center gap-2">
+          <i class="bi bi-graph-down-arrow text-ocean-500"></i> Perfil y tiempos
+        </h2>
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1"><i class="bi bi-arrow-down-circle text-ocean-500 me-1"></i>Profundidad máx. (m) *</label>
+            <input type="number" formControlName="depthMax" class="input-ocean" min="0" placeholder="m" [class.border-red-500]="form.get('depthMax')?.invalid && form.get('depthMax')?.touched" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1"><i class="bi bi-clock text-ocean-500 me-1"></i>Duración (min) *</label>
+            <input type="number" formControlName="durationMinutes" class="input-ocean" min="0" placeholder="min" [class.border-red-500]="form.get('durationMinutes')?.invalid && form.get('durationMinutes')?.touched" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">RNT</label>
+            <input type="number" formControlName="rnt" class="input-ocean" min="0" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">ABT+</label>
+            <input type="number" formControlName="abt" class="input-ocean" min="0" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">TBT-</label>
+            <input type="number" formControlName="tbt" class="input-ocean" min="0" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Visibilidad, temperatura y peso -->
+      <div class="card-ocean p-6 mb-6">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4 border-b border-gray-200 pb-2 flex items-center gap-2">
+          <i class="bi bi-sun text-ocean-500"></i> Condiciones ambientales
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="flex gap-2 items-end">
+            <div class="flex-1">
+              <label class="block text-sm font-medium text-gray-700 mb-1"><i class="bi bi-brightness-high text-ocean-500 me-1"></i>Visibilidad</label>
+              <input type="number" formControlName="visibility" class="input-ocean" min="0" placeholder="Ej. 15" />
+            </div>
+            <div class="w-20">
+              <select formControlName="visibilityUnit" class="input-ocean">
+                <option value="m">m</option>
+                <option value="ft">ft</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1"><i class="bi bi-thermometer-half text-ocean-500 me-1"></i>Temp. aire (°C)</label>
+            <input type="number" formControlName="tempAir" class="input-ocean" placeholder="°C" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1"><i class="bi bi-thermometer-half text-ocean-500 me-1"></i>Temp. superficie (°C)</label>
+            <input type="number" formControlName="tempSurface" class="input-ocean" placeholder="°C" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1"><i class="bi bi-droplet-half text-ocean-500 me-1"></i>Temp. fondo (°C)</label>
+            <input type="number" formControlName="tempBottom" class="input-ocean" placeholder="°C" />
+          </div>
+          <div class="flex gap-2 items-end">
+            <div class="flex-1">
+              <label class="block text-sm font-medium text-gray-700 mb-1"><i class="bi bi-speedometer2 text-ocean-500 me-1"></i>Peso</label>
+              <input type="number" formControlName="weight" class="input-ocean" min="0" placeholder="Ej. 6" />
+            </div>
+            <div class="w-20">
+              <select formControlName="weightUnit" class="input-ocean">
+                <option value="kg">kg</option>
+                <option value="lbs">lbs</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Protección y condiciones -->
+      <div class="card-ocean p-6 mb-6">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4 border-b border-gray-200 pb-2 flex items-center gap-2">
+          <i class="bi bi-person-badge text-ocean-500"></i> Protección y condiciones
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <p class="text-sm font-medium text-gray-700 mb-2"><i class="bi bi-shield-check text-ocean-500 me-1"></i>Protección térmica</p>
+            <div class="flex flex-wrap gap-2">
+              @for (op of opcionesProteccion; track op.value) {
+                <button type="button"
+                        (click)="toggleProteccion(op.value)"
+                        [class]="tieneProteccion(op.value) ? 'bg-ocean-500 text-white' : 'bg-gray-100 text-gray-700'"
+                        class="px-3 py-1.5 rounded-lg text-sm border border-gray-200 hover:border-ocean-400 transition-colors">
+                  {{ op.label }}
+                </button>
+              }
+            </div>
+          </div>
+          <div>
+            <p class="text-sm font-medium text-gray-700 mb-2"><i class="bi bi-wind text-ocean-500 me-1"></i>Condiciones</p>
+            <div class="flex flex-wrap gap-2">
+              @for (op of opcionesCondiciones; track op.value) {
+                <button type="button"
+                        (click)="toggleCondicion(op.value)"
+                        [class]="tieneCondicion(op.value) ? 'bg-ocean-500 text-white' : 'bg-gray-100 text-gray-700'"
+                        class="px-3 py-1.5 rounded-lg text-sm border border-gray-200 hover:border-ocean-400 transition-colors">
+                  {{ op.label }}
+                </button>
+              }
+            </div>
+          </div>
+        </div>
+        <div class="mt-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de inmersión</label>
+          <select formControlName="diveType" class="input-ocean max-w-md">
+            @for (op of opcionesTipoInmersion; track op.value) {
+              <option [value]="op.value">{{ op.label }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <!-- Presiones y gas -->
+      <div class="card-ocean p-6 mb-6">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4 border-b border-gray-200 pb-2 flex items-center gap-2">
+          <i class="bi bi-fuel-pump text-ocean-500"></i> Presiones y gas
+        </h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Presión inicio (bar/psi)</label>
+            <input type="number" formControlName="pressureStart" class="input-ocean" min="0" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Presión fin (bar/psi)</label>
+            <input type="number" formControlName="pressureEnd" class="input-ocean" min="0" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Hora entrada</label>
+            <input type="time" formControlName="timeIn" class="input-ocean" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Hora salida</label>
+            <input type="time" formControlName="timeOut" class="input-ocean" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Mezcla (% O₂)</label>
+            <input type="text" formControlName="gasMixPercent" class="input-ocean" placeholder="Ej. 21 o EAN32" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Tiempos acumulados (opcional) -->
+      <div class="card-ocean p-6 mb-6">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4 border-b border-gray-200 pb-2 flex items-center gap-2">
+          <i class="bi bi-stopwatch text-ocean-500"></i> Tiempos de fondo (opcional)
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Tiempo acumulado a fecha (min)</label>
+            <input type="number" formControlName="bottomTimeToDate" class="input-ocean" min="0" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Tiempo esta inmersión (min)</label>
+            <input type="number" formControlName="bottomTimeThisDive" class="input-ocean" min="0" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Tiempo total acumulado (min)</label>
+            <input type="number" formControlName="cumulativeTime" class="input-ocean" min="0" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Comentarios -->
+      <div class="card-ocean p-6 mb-6">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4 border-b border-gray-200 pb-2 flex items-center gap-2">
+          <i class="bi bi-chat-quote text-ocean-500"></i> Comentarios
+        </h2>
+        <textarea formControlName="comments" class="input-ocean w-full min-h-[100px]" placeholder="Notas, observaciones, fauna, incidencias..."></textarea>
+      </div>
+
+      <!-- Botones -->
+      <div class="flex flex-wrap gap-4 justify-end">
+        <a routerLink="/logbook" class="px-6 py-2.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors inline-flex items-center gap-2">
+          <i class="bi bi-x-lg"></i> Cancelar
+        </a>
+        <button type="submit" class="btn-ocean inline-flex items-center gap-2" [disabled]="enviando">
+          @if (enviando) {
+            <i class="bi bi-arrow-repeat animate-spin"></i>
+            <span>Guardando...</span>
+          } @else {
+            <i class="bi bi-check2-circle"></i>
+            <span>Registrar inmersión</span>
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -12,4 +12,8 @@ import { FooterComponent } from './shared/components/footer/footer.component';
 })
 export class AppComponent {
   title = 'SubMerso';
+  /** Burbujas globales (pastel) */
+  bubbles = Array.from({ length: 72 }, (_, i) => i);
+  /** Pocas burbujas azul oscuro solo en el main */
+  mainBubbles = Array.from({ length: 14 }, (_, i) => i);
 }

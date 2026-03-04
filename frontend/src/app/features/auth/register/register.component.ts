@@ -19,6 +19,8 @@ export class RegisterComponent implements OnInit {
   showConfirmPassword = false;
   currentStep = 1;
 
+  accountType: 'USER' | 'COMPANY' = 'USER';
+
   certificationLevels = [
     'Sin certificación',
     'Open Water Diver',
@@ -40,7 +42,9 @@ export class RegisterComponent implements OnInit {
       password: ['', [Validators.required, Validators.minLength(8), this.passwordStrengthValidator]],
       confirmPassword: ['', [Validators.required]],
       certificationLevel: ['Sin certificación'],
-      acceptTerms: [false, [Validators.requiredTrue]]
+      acceptTerms: [false, [Validators.requiredTrue]],
+      cif: [''],
+      role: ['ROLE_USER']
     }, {
       validators: this.passwordMatchValidator
     });
@@ -51,6 +55,26 @@ export class RegisterComponent implements OnInit {
       this.router.navigate(['/feed']);
     }
   }
+
+  // Método para cambiar el tipo de cuenta y ajustar validaciones
+    setAccountType(type: 'USER' | 'COMPANY'): void {
+        this.accountType = type;
+        const cifControl = this.registerForm.get('cif');
+        const roleControl = this.registerForm.get('role');
+
+        if (type === 'COMPANY') {
+            // Si es empresa, exigimos CIF y cambiamos el rol
+            cifControl?.setValidators([Validators.required, Validators.pattern(/^[A-Z0-9]{8,9}$/i)]);
+            roleControl?.setValue('ROLE_COMPANY');
+        } else {
+            // Si es usuario normal, limpiamos validaciones
+            cifControl?.clearValidators();
+            cifControl?.setValue('');
+            roleControl?.setValue('ROLE_USER');
+        }
+        // Actualizamos el estado del formulario en tiempo real
+        cifControl?.updateValueAndValidity();
+    }
 
   passwordStrengthValidator(control: AbstractControl): { [key: string]: boolean } | null {
     const value = control.value;
@@ -79,11 +103,11 @@ export class RegisterComponent implements OnInit {
     this.isLoading = true;
     this.errorMessage = '';
 
-    const { username, email, password, fullName } = this.registerForm.value;
+    const { username, email, password, fullName, cif, role } = this.registerForm.value;
 
-    this.authService.register({ username, email, password, fullName }).subscribe({
+    this.authService.register({ username, email, password, fullName, cif, role }).subscribe({
       next: () => {
-        const target = this.authService.isAdmin() ? '/admin' : '/feed';
+        const target = this.authService.isAdmin() ? '/admin' : '/';
         this.router.navigate([target]);
       },
       error: (error) => {
@@ -103,13 +127,15 @@ export class RegisterComponent implements OnInit {
 
   nextStep(): void {
     if (this.currentStep === 1) {
-      const step1Valid = this.username?.valid && this.email?.valid && this.fullName?.valid;
+        const isCifValid = this.accountType === 'COMPANY' ? this.registerForm.get('cif')?.valid : true;
+        const step1Valid = this.username?.valid && this.email?.valid && this.fullName?.valid && isCifValid;
       if (step1Valid) {
         this.currentStep = 2;
       } else {
         this.username?.markAsTouched();
         this.email?.markAsTouched();
         this.fullName?.markAsTouched();
+        this.registerForm.get('cif')?.markAsTouched();
       }
     }
   }
@@ -137,4 +163,5 @@ export class RegisterComponent implements OnInit {
   get password() { return this.registerForm.get('password'); }
   get confirmPassword() { return this.registerForm.get('confirmPassword'); }
   get acceptTerms() { return this.registerForm.get('acceptTerms'); }
+    get cif() { return this.registerForm.get('cif'); }
 }

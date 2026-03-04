@@ -54,6 +54,16 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
+    path: 'logbook/nueva',
+    loadComponent: () => import('./features/logbook/dive-create/dive-create.component').then(m => m.DiveCreateComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'logbook/editar/:id',
+    loadComponent: () => import('./features/logbook/dive-edit/dive-edit.component').then(m => m.DiveEditComponent),
+    canActivate: [authGuard]
+  },
+  {
     path: 'logbook/:id',
     loadComponent: () => import('./features/logbook/dive-detail/dive-detail.component').then(m => m.DiveDetailComponent),
     canActivate: [authGuard]

@@ -33,7 +33,7 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/feed';
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
     this.sessionExpired = this.route.snapshot.queryParams['sessionExpired'] === 'true';
 
     if (this.authService.isLoggedIn()) {
@@ -54,7 +54,7 @@ export class LoginComponent implements OnInit {
 
     this.authService.login({ email, password }).subscribe({
       next: () => {
-        const target = this.authService.isAdmin() ? '/admin' : (this.returnUrl || '/feed');
+        const target = this.authService.isAdmin() ? '/admin' : (this.returnUrl || '/');
         this.router.navigate([target]);
       },
       error: (error) => {
