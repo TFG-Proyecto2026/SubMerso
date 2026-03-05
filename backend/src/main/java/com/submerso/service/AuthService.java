@@ -89,8 +89,8 @@ public class AuthService {
         );
         
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-        User user = userRepository.findByEmail(userPrincipal.getEmail())
-                .orElseThrow(() -> new ResourceNotFoundException("User", "email", request.getEmail()));
+        User user = userRepository.findById(userPrincipal.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("User", "email/username", request.getEmail()));
         
         String accessToken = jwtUtils.generateAccessToken(userPrincipal);
         String refreshToken = jwtUtils.generateRefreshToken(userPrincipal);
