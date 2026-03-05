@@ -32,7 +32,7 @@ public class UserPrincipal implements UserDetails {
         return UserPrincipal.builder()
                 .id(user.getId())
                 .email(user.getEmail())
-                .username(user.getEmail())
+                .username(user.getUsername())
                 .password(user.getPassword())
                 .authorities(authorities)
                 .enabled(user.getEnabled())
@@ -52,7 +52,7 @@ public class UserPrincipal implements UserDetails {
     
     @Override
     public String getUsername() {
-        return email;
+        return username;
     }
     
     @Override

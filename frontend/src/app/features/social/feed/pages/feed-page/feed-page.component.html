@@ -1,0 +1,74 @@
+<div class="max-w-2xl mx-auto py-8 px-4">
+
+    <app-create-post (postCreated)="onPostCreated($event)"></app-create-post>
+
+    <div class="my-8 flex items-center">
+        <div class="flex-grow border-t border-gray-200"></div>
+        <span class="flex-shrink-0 mx-4 text-gray-400 text-sm">
+      <i class="bi bi-water text-ocean-500"></i> Últimas inmersiones
+    </span>
+        <div class="flex-grow border-t border-gray-200"></div>
+    </div>
+
+    @if (isLoading()) {
+        <div class="text-center py-10">
+      <span class="animate-spin text-ocean-600 text-4xl inline-block">
+        <i class="bi bi-arrow-repeat"></i>
+      </span>
+            <p class="text-gray-500 mt-2 font-medium">Buceando en la base de datos...</p>
+        </div>
+    } @else {
+        @for (post of posts(); track post.id) {
+
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 mb-8 overflow-hidden">
+
+                <div class="p-4 flex items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-ocean-100 rounded-full flex items-center justify-center text-ocean-700 font-bold text-lg mr-3">
+                            {{ post.authorUsername.charAt(0).toUpperCase() }}
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-800">{{ post.authorUsername }}</h3>
+                            <p class="text-xs text-gray-500">
+                                <i class="bi bi-geo-alt mr-1"></i>{{ post.location || 'En algún lugar del mar' }}
+                            </p>
+                        </div>
+                    </div>
+                    <span class="text-xs text-gray-400">{{ post.createdAt | date:'shortDate' }}</span>
+                </div>
+
+                <img [src]="post.imageUrl" alt="Foto de {{ post.authorUsername }}" class="w-full object-cover max-h-[30rem] bg-gray-100">
+
+                <div class="p-4">
+                    <div class="flex items-center mb-3">
+                        <button class="text-gray-500 hover:text-red-500 transition-colors mr-4 text-xl">
+                            <i class="bi" [ngClass]="post.isLikedByMe ? 'bi-heart-fill text-red-500' : 'bi-heart'"></i>
+                        </button>
+                        <span class="text-sm font-semibold text-gray-700">{{ post.likesCount }} me gusta</span>
+                    </div>
+
+                    <p class="text-gray-800 mb-2">
+                        <span class="font-bold mr-2">{{ post.authorUsername }}</span>{{ post.caption }}
+                    </p>
+
+                    @if (post.tags && post.tags.length > 0) {
+                        <div class="flex flex-wrap gap-2 mt-3">
+                            @for (tag of post.tags; track tag) {
+                                <span class="text-xs font-medium text-ocean-600 bg-ocean-50 border border-ocean-100 px-2.5 py-1 rounded-full">
+                  #{{ tag }}
+                </span>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+
+        } @empty {
+            <div class="text-center py-12 bg-gray-50 rounded-xl border border-dashed border-gray-300">
+                <i class="bi bi-camera text-5xl text-gray-300 mb-3 block"></i>
+                <h3 class="text-lg font-medium text-gray-800">Aún no hay publicaciones</h3>
+                <p class="text-gray-500 mt-1">¡Sé el primero en compartir una foto de tu inmersión!</p>
+            </div>
+        }
+    }
+</div>
