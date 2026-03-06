@@ -15,12 +15,16 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Document(collection = "bookings")
 public class Booking {
-    
+
     @Id
     private String id;
+    private String offerId;
+    private String offerTitle;
     private String userId;
-    private String serviceId;
+    private String date;
+    private Integer participants;
+    private Double totalPrice;
     private String status;
-    private LocalDateTime bookingDate;
+    private String notes;
     private LocalDateTime createdAt;
 }
