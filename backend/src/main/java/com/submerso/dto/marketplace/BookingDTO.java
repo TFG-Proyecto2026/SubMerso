@@ -11,4 +11,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class BookingDTO {
     private String id;
+    private String offerId;
+    private String offerTitle;
+    private String userId;
+    private String date;
+    private Integer participants;
+    private Double totalPrice;
+    private String status;
+    private String notes;
 }

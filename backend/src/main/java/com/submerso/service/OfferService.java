@@ -1,8 +1,10 @@
 package com.submerso.service;
 
 import com.submerso.dto.common.PagedResponse;
+import com.submerso.dto.marketplace.OfferDetailDTO;
 import com.submerso.dto.marketplace.OfferSummaryDTO;
 import com.submerso.model.Offer;
+import com.submerso.repository.OfferRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -12,12 +14,14 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class OfferService {
 
     private final MongoTemplate mongoTemplate;
+    private final OfferRepository offerRepository;
 
     public PagedResponse<OfferSummaryDTO> searchOffers(
             String q,
@@ -96,6 +100,33 @@ public class OfferService {
                 .reviewCount(offer.getReviewCount())
                 .centerName(offer.getCenterName())
                 .centerVerified(offer.getCenterVerified())
+                .durationMinutes(offer.getDurationMinutes())
+                .build();
+    }
+
+    public Optional<OfferDetailDTO> getOfferById(String id) {
+        return offerRepository.findById(id).map(this::toDetailDTO);
+    }
+
+    private OfferDetailDTO toDetailDTO(Offer offer) {
+        return OfferDetailDTO.builder()
+                .id(offer.getId())
+                .title(offer.getTitle())
+                .description(offer.getDescription())
+                .tags(offer.getTags())
+                .category(offer.getCategory())
+                .price(offer.getPrice())
+                .currency(offer.getCurrency() != null ? offer.getCurrency() : "EUR")
+                .city(offer.getCity())
+                .country(offer.getCountry())
+                .imageUrl(offer.getImageUrl())
+                .rating(offer.getRating())
+                .reviewCount(offer.getReviewCount())
+                .centerId(offer.getCenterId())
+                .centerName(offer.getCenterName())
+                .centerVerified(offer.getCenterVerified())
+                .available(offer.getAvailable())
+                .maxParticipants(offer.getMaxParticipants())
                 .durationMinutes(offer.getDurationMinutes())
                 .build();
     }

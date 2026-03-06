@@ -19,6 +19,14 @@ export interface OfferSummary {
   durationMinutes: number;
 }
 
+export interface OfferDetail extends OfferSummary {
+  description: string;
+  tags: string[];
+  centerId: string;
+  available: boolean;
+  maxParticipants: number;
+}
+
 export interface PagedResponse<T> {
   content: T[];
   page: number;
@@ -37,6 +45,27 @@ export interface OfferFilters {
   sort?: string;
   page?: number;
   size?: number;
+}
+
+export interface BookingRequest {
+  offerId: string;
+  offerTitle: string;
+  date: string;
+  participants: number;
+  totalPrice: number;
+  notes?: string;
+}
+
+export interface BookingResponse {
+  id: string;
+  offerId: string;
+  offerTitle: string;
+  userId: string;
+  date: string;
+  participants: number;
+  totalPrice: number;
+  status: string;
+  notes: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -62,6 +91,18 @@ export class MarketplaceService {
 
     return this.http
       .get<{ success: boolean; data: PagedResponse<OfferSummary> }>(`${this.API}/offers`, { params })
+      .pipe(map(res => res.data));
+  }
+
+  getOfferById(id: string): Observable<OfferDetail> {
+    return this.http
+      .get<{ success: boolean; data: OfferDetail }>(`${this.API}/offers/${id}`)
+      .pipe(map(res => res.data));
+  }
+
+  createBooking(booking: BookingRequest): Observable<BookingResponse> {
+    return this.http
+      .post<{ success: boolean; data: BookingResponse }>(`${this.API}/bookings`, booking)
       .pipe(map(res => res.data));
   }
 }
